@@ -13,6 +13,8 @@ package frc.robot.subsystems;
         NetworkTableEntry tx = table.getEntry("tx");
         NetworkTableEntry ty = table.getEntry("ty");
         NetworkTableEntry ta = table.getEntry("ta");
+        
+        //Latencies below are necessary for pose estimation with WPIlib.
         NetworkTableEntry doesTargetExist = table.getEntry("tv"); 
         NetworkTableEntry pipelineLatency = table.getEntry("tl");
         NetworkTableEntry captureLatency = table.getEntry("cl");
@@ -30,9 +32,6 @@ package frc.robot.subsystems;
     
         @Override
         public void periodic() {
-            SmartDashboard.putNumber("LimelightX", x);
-            SmartDashboard.putNumber("LimelightY", y);
-            SmartDashboard.putNumber("LimelightArea", area);
         }
     }
         
