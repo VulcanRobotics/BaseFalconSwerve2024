@@ -39,7 +39,7 @@ public class Swerve extends SubsystemBase {
         /* By pausing init for a second before setting module offsets, we avoid a bug with inverting motors.
          * See https://github.com/Team364/BaseFalconSwerve/issues/8 for more info.
          */
-        Timer.delay(1.0);
+        //Timer.delay(0.5);
         resetModulesToAbsolute();
 
         swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getYaw(), getModulePositions());
