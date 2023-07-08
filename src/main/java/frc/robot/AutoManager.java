@@ -31,8 +31,8 @@ public class AutoManager {
     public AutoManager(Swerve swerveDriveSubsystem) {
         eventMap.put("Hello", new PrintCommand("Hello"));
         autoBuilder = new SwerveAutoBuilder(
-                swerveDriveSubsystem::getPose2,
-                swerveDriveSubsystem::resetEstimator,
+                swerveDriveSubsystem::getPose,
+                swerveDriveSubsystem::resetOdometry,
                 new PIDConstants(5.6, 0.0, 0.001),
                 new PIDConstants(4.3, 0.0, 0.001),
                 swerveDriveSubsystem::setModuleStates,
