@@ -5,69 +5,106 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.Timer;
-
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Matrix;
 import java.util.Optional;
-
-
+import frc.robot.Constants;
+import frc.lib.vision.LLPoseEstimate;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTable;
-    import edu.wpi.first.networktables.NetworkTableEntry;
-    import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
-    import frc.lib.vision.LLPoseEstimate;;
 
     //oonga boonga robot bullshit
     public class VisionSubsystem extends SubsystemBase{
 
-        public VisionSubsystem() {
-
-        }
         NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-        NetworkTableEntry tx = table.getEntry("tx");
-        NetworkTableEntry ty = table.getEntry("ty");
-        NetworkTableEntry ta = table.getEntry("ta");
-        
+
         //Latencies below are necessary for pose estimation with WPIlib.
         NetworkTableEntry doesTargetExist = table.getEntry("tv"); 
         NetworkTableEntry pipelineLatency = table.getEntry("tl");
         NetworkTableEntry captureLatency = table.getEntry("cl");
 
-        //Botpose values
-        double[] bluePose = table.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
-        double[] redPose = table.getEntry("botpose_wpired").getDoubleArray(new double[6]);
-        NetworkTableEntry id = table.getEntry("tid");
+        //Botpose value
 
-        Optional<LLPoseEstimate> aprilTagEstimate = Optional.empty();
+        private double translationStdDevCoefficient = 0.3;
+        private double rotationStdDevCoefficient = 0.9;
 
-
+        Optional<LLPoseEstimate> poseEstimate  = Optional.empty();
         Swerve swerveDriveSubsystem;
 
         public VisionSubsystem(Swerve swerve) {
-            swerveDriveSubsystem = swerve;
+            this.swerveDriveSubsystem = swerve;
+            
         }
     
-        //read values periodically
-        double x = tx.getDouble(0.0);
-        double y = ty.getDouble(0.0);
-        double tl = pipelineLatency.getDouble(0.0);
-        double cl = captureLatency.getDouble(0.0);
-        double area = ta.getDouble(0.0);
 
-        public Pose2d getVisionEstimate() {
-            double xb = bluePose[0];
-            double yb = bluePose[1]; //gets
-            Rotation2d rot = new Rotation2d(bluePose[5]);
-            return new Pose2d(xb, yb, rot);
+        //read values periodically
+        private Matrix<N3, N1> calculateVisionStdDevs(double distance) {
+            var translationStdDev = translationStdDevCoefficient * Math.pow(distance, 2);
+            var rotationStdDev = rotationStdDevCoefficient * Math.pow(distance, 2);
+    
+            return VecBuilder.fill(translationStdDev, translationStdDev, rotationStdDev);
+        }
+
+        public Optional<LLPoseEstimate> getEstimate(double[] positions, double id, double latency ) {
+            double[] botposeArray = positions;
+
+            if (id != -1) {
+                
+                Pose3d botPose = new Pose3d(
+                                botposeArray[0],
+                                botposeArray[1],
+                                botposeArray[2],
+                                new Rotation3d(
+                                        Math.toRadians(botposeArray[3]),
+                                        Math.toRadians(botposeArray[4]),
+                                        Math.toRadians(botposeArray[5])));
+    
+                return Optional.of(new LLPoseEstimate(botPose, latency));
+            } else {
+                return Optional.empty();
+            }
+        }
+        
+
+
+        private void addVisionEstimate(LLPoseEstimate estimate, double id){
+            if (id != -1) {
+            var aprilTagPose =
+                Constants.FieldConstants.APRIL_TAG_FIELD_LAYOUT.getTagPose((int) id);
+            if (aprilTagPose.isPresent()) {
+            double distanceFromPrimaryTag =
+                aprilTagPose.get().getTranslation().getDistance(estimate.estimatedPose.getTranslation());
+            swerveDriveSubsystem.swerveDrivePoseEstimator.addVisionMeasurement(
+                estimate.estimatedPose.toPose2d(), estimate.timestampSeconds, calculateVisionStdDevs(distanceFromPrimaryTag));
+            }
+            }
         }
     
         @Override
         public void periodic() {
-            swerveDriveSubsystem.swerveDrivePoseEstimator.addVisionMeasurement(getVisionEstimate(), (Timer.getFPGATimestamp()-(cl/1000)-(tl/1000)));
-            SmartDashboard.putString("test", "Mogus");
-        }
+            double[] bluePose = table.getEntry("botpose_wpiblue").getDoubleArray(new double[6]); 
+            double id = table.getEntry("tid").getDouble(0);
+            double latency = Timer.getFPGATimestamp() - (pipelineLatency.getDouble(0.0) + captureLatency.getDouble(0.0))/1000;
+            poseEstimate = getEstimate(bluePose, id, latency);
+
+            SmartDashboard.putNumber("x", bluePose[0]);
+            SmartDashboard.putNumber("id", id);
+            SmartDashboard.putNumber("latency", latency);
+
+            if (poseEstimate.isPresent()) {
+                addVisionEstimate(poseEstimate.get(), id);
+            }
+
 
         
+        }
+
     }
         
     

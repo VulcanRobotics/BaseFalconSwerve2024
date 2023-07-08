@@ -10,6 +10,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.Constants;
 
 
 import java.util.ArrayList;
@@ -19,28 +21,22 @@ import java.util.List;
  
 public class AutoManager {
     SwerveAutoBuilder autoBuilder;
-
+    VisionSubsystem visionSubsystem;
     HashMap<String, Command> eventMap = new HashMap<>();
 
+    List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup("thing", new PathConstraints(.5, .5));
 
-
-    List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup("test", new PathConstraints(1, 1));
-
-
-
-    public AutoManager(Swerve swerveDriveSubsystem) {
-        eventMap.put("Hello", new PrintCommand("Hello"));
+    public AutoManager(Swerve swerveDriveSubsystem, VisionSubsystem visionSubsystem) {
         autoBuilder = new SwerveAutoBuilder(
-                swerveDriveSubsystem::getPose2,
-                swerveDriveSubsystem::resetEstimator,
-                new PIDConstants(5.6, 0.0, 0.001),
-                new PIDConstants(4.3, 0.0, 0.001),
+                swerveDriveSubsystem::getPose,
+                swerveDriveSubsystem::resetPose,
+                new PIDConstants(5.6, 0.0, 0.001), //5.6
+                new PIDConstants(4.3, 0.0, 0.001), //4.3
                 swerveDriveSubsystem::setModuleStates,
                 eventMap,
                 true,
                 swerveDriveSubsystem);
-
-        
+        this.visionSubsystem = visionSubsystem;
     }
     
     public Command getAuton() {

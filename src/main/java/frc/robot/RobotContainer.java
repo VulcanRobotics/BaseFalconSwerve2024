@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -31,11 +33,12 @@ public class RobotContainer {
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
     private final JoystickButton calibrateEncoders = new JoystickButton(driver, XboxController.Button.kStart.value);
+    private final JoystickButton goToPosition = new JoystickButton(driver, XboxController.Button.kB.value);
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final VisionSubsystem s_Vision = new VisionSubsystem(s_Swerve);
-    public AutoManager autoManager = new AutoManager(s_Swerve);
+    public AutoManager autoManager = new AutoManager(s_Swerve, s_Vision);
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -72,6 +75,8 @@ public class RobotContainer {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         calibrateEncoders.onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
+        goToPosition.onTrue(new LinearGoToPosition(s_Swerve, new Pose2d(3.0, 4.0, new Rotation2d(0.0))));
+
     }
 
     /**
