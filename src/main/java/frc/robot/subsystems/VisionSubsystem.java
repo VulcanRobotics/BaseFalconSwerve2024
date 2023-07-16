@@ -22,7 +22,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
     //oonga boonga robot bullshit
     public class VisionSubsystem extends SubsystemBase{
 
-        NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+        NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-rear");
 
         //Latencies below are necessary for pose estimation with WPIlib.
         NetworkTableEntry doesTargetExist = table.getEntry("tv"); 

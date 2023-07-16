@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -48,7 +49,9 @@ public class Swerve extends SubsystemBase {
         swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.swerveKinematics,
                                                                  getYaw(),
                                                                   getModulePositions(),
-                                                                   getPose());
+                                                                   getPose(),
+                                                                   VecBuilder.fill(0.2, 0.2, 0.2),
+                                                                   VecBuilder.fill(0.8, 0.8, 0.8));
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -80,6 +83,7 @@ public class Swerve extends SubsystemBase {
         
         for(SwerveModule mod : mSwerveMods){
             mod.setDesiredState(desiredStates[mod.moduleNumber], false);
+            //SmartDashboard.putNumber("Cancoder" + mod.toString(), mod.getCanCoder().getDegrees());
         }
     }    
 
@@ -121,6 +125,7 @@ public class Swerve extends SubsystemBase {
 
     public Rotation2d getYaw() {
         return (Constants.Swerve.invertGyro) ? Rotation2d.fromDegrees(360 - m_gyro.getYaw()) : Rotation2d.fromDegrees(m_gyro.getYaw());
+
     }
 
     public void resetModulesToAbsolute(){
@@ -142,6 +147,7 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("Odometry X", swerveOdometry.getPoseMeters().getX());
         SmartDashboard.putNumber("Odometry Y", swerveOdometry.getPoseMeters().getY());
         SmartDashboard.putNumber("Odometry Rot", swerveOdometry.getPoseMeters().getRotation().getDegrees());
+        SmartDashboard.putNumber("Gyro Yaw", getYaw().getDegrees());
 
         SmartDashboard.putNumber("Estimator X", swerveDrivePoseEstimator.getEstimatedPosition().getX());
         SmartDashboard.putNumber("Estimator Y", swerveDrivePoseEstimator.getEstimatedPosition().getY());

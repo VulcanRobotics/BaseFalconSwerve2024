@@ -24,7 +24,7 @@ public class AutoManager {
 
 
 
-    List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup("test", new PathConstraints(1, 1));
+    List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup("test", new PathConstraints(0.5, 0.5));
 
 
 
@@ -32,15 +32,15 @@ public class AutoManager {
     public AutoManager(Swerve swerveDriveSubsystem) {
         eventMap.put("Hello", new PrintCommand("Hello"));
         autoBuilder = new SwerveAutoBuilder(
-                //swerveDriveSubsystem::getPose,
                 swerveDriveSubsystem::getPose2,
-                // swerveDriveSubsystem::resetOdometry,
+                //swerveDriveSubsystem::getPose2,
                 swerveDriveSubsystem::resetEstimator,
+                //swerveDriveSubsystem::resetEstimator,
                 new PIDConstants(5.6, 0.0, 0.001),
                 new PIDConstants(4.3, 0.0, 0.001),
                 swerveDriveSubsystem::setModuleStates,
                 eventMap,
-                true,
+                true,  
                 swerveDriveSubsystem);
 
         
