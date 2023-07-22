@@ -9,7 +9,11 @@ import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.RobotContainer;
+import frc.robot.commands.HighPlace;
+import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.PneumaticSubsystem;
 import frc.robot.subsystems.Swerve;
+import frc.robot.commands.*;
 
 
 import java.util.ArrayList;
@@ -24,17 +28,20 @@ public class AutoManager {
 
 
 
-    List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup("test", new PathConstraints(0.5, 0.5));
+    List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup("test", new PathConstraints(3.5, 4.0));
 
 
 
 
-    public AutoManager(Swerve swerveDriveSubsystem) {
+    public AutoManager(Swerve swerveDriveSubsystem, ArmSubsystem armSubsystem, PneumaticSubsystem pneumaticSubsystem) {
         eventMap.put("Hello", new PrintCommand("Hello"));
+        eventMap.put("HighPlace", new HighPlace(armSubsystem));
+        eventMap.put("MidPlace", new MidPlace(armSubsystem));
+        eventMap.put("Intake", new InstantCommand(() -> pneumaticSubsystem.toggleIntakeState()));
         autoBuilder = new SwerveAutoBuilder(
-                swerveDriveSubsystem::getPose2,
+                swerveDriveSubsystem::getPose,
                 //swerveDriveSubsystem::getPose2,
-                swerveDriveSubsystem::resetEstimator,
+                swerveDriveSubsystem::resetOdometry,
                 //swerveDriveSubsystem::resetEstimator,
                 new PIDConstants(5.6, 0.0, 0.001),
                 new PIDConstants(4.3, 0.0, 0.001),

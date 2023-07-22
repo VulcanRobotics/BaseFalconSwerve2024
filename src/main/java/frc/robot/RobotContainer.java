@@ -1,5 +1,7 @@
 package frc.robot;
 
+import javax.swing.JOptionPane;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -20,7 +22,7 @@ import frc.robot.AutoManager;
  */
 public class RobotContainer {
     /* Controllers */
-    private final Joystick driver = new Joystick(0);
+    private final XboxController driver = new XboxController(0);
 
     /* Drive Controls */
     private final int translationAxis = XboxController.Axis.kLeftY.value;
@@ -29,13 +31,18 @@ public class RobotContainer {
 
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
-    private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kBack.value);
     private final JoystickButton calibrateEncoders = new JoystickButton(driver, XboxController.Button.kStart.value);
-
+    private final JoystickButton highPlace = new JoystickButton(driver, XboxController.Button.kX.value);
+    private final JoystickButton midPlace = new JoystickButton(driver, XboxController.Button.kA.value);
+    private final JoystickButton claw = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
+    private final JoystickButton intake = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final VisionSubsystem s_Vision = new VisionSubsystem(s_Swerve);
-    public AutoManager autoManager = new AutoManager(s_Swerve);
+    private final ArmSubsystem s_Arm = new ArmSubsystem(driver);
+    private final PneumaticSubsystem s_Pneumatic = new PneumaticSubsystem();
+    public AutoManager autoManager = new AutoManager(s_Swerve, s_Arm, s_Pneumatic);
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -49,6 +56,10 @@ public class RobotContainer {
                 () -> robotCentric.getAsBoolean()
             )
         );
+
+       ///s_Arm.setDefaultCommand(new InstantCommand(() -> s_Arm.stopMovement(), s_Arm));
+
+       
 
 
 
@@ -72,6 +83,10 @@ public class RobotContainer {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         calibrateEncoders.onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
+        highPlace.onTrue(new HighPlace(s_Arm));
+        midPlace.onTrue(new MidPlace(s_Arm));
+        claw.onTrue(new InstantCommand(() -> s_Pneumatic.toggleClawState()));
+        intake.onTrue(new InstantCommand(() -> s_Pneumatic.toggleIntakeState()));
     }
 
     /**
