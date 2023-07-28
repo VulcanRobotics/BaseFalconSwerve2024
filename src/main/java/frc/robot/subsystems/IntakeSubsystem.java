@@ -1,4 +1,4 @@
-/*package frc.robot.subsystems;
+package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -13,9 +13,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import frc.robot.Constants;
-import frc.robot.Inputs;
 import frc.robot.Robot;
-import frc.robot.Constants.Tower;
 
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -24,7 +22,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public static final DigitalInput m_intakePhotogate = new DigitalInput(9);
 
-    private XboxController m_driverXbox = Inputs.m_driverXbox;
 
     public static double intakeSpeed = 0.0;
     public static double leftPincerSpeed = 0.0;
@@ -95,16 +92,34 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void intake() {
-        intakeSpeed = 1;
+        intakeSpeed = 0.75;
+        dontBringIn = false;
+        if (!haveCube) {
+            haveCubeOnce = false;
+        }
+    }
+
+    public void spit() {
+        intakeSpeed = -0.15;
+        haveCube = false;
         becreamptuous = true;
-        break;
+        dontBringIn = true;
+    }
+
+    public void holdBall() {
+        if (firstPass == false) {
+            startClock = true;
+            firstPass = true;
+        }
+        keepSpinning(3000);
+        m_leftPincerMotor.set(intakeSpeed);
     }
 
 
     @Override
     public void periodic(){
 
-        SmartDashboard.putBoolean("PHOTOGATE", getIntakePhotogate());
+        //SmartDashboard.putBoolean("PHOTOGATE", getIntakePhotogate());
 
         
         //Detects whether the photogate senses something or not, changing the variable depending on the value
@@ -115,7 +130,7 @@ public class IntakeSubsystem extends SubsystemBase {
         }
 
         //if the left trigger is pushed, the intake goes down and the clock (for the function) turns on if the cube is sensed
-        if (m_driverXbox.getLeftTriggerAxis() > 0.1){
+        /*if (m_driverXbox.getLeftTriggerAxis() > 0.1){
             PneumaticSubsystem.setIntakeState(true);
             intakeSpeed = 0.75;
             dontBringIn = false;
@@ -139,13 +154,13 @@ public class IntakeSubsystem extends SubsystemBase {
             //PneumaticSubsystem.setEjectState(true);
         } else {
             //PneumaticSubsystem.setEjectState(false);
-        }
+        }*/
 
 
 
 
         //these are cases used for autonomous
-        switch (Inputs.autonRequestIntakeGoTo){
+        /*switch (Inputs.autonRequestIntakeGoTo){
             case IGNORE: 
 
                 break;
@@ -187,11 +202,11 @@ public class IntakeSubsystem extends SubsystemBase {
                 
             default:
                 break;
-        }
+        }*/
         
 
         
- 
+        
         //This finally goes over the conditions and gives the motor power dependent on which is satified
         if (haveCube) { //If you have the cube, stop the motors
             if (haveCubeOnce == false) {
@@ -200,13 +215,6 @@ public class IntakeSubsystem extends SubsystemBase {
             }
             firstPass = false;
             keepSpinning(250);
-            m_leftPincerMotor.set(intakeSpeed);
-        } else if (m_driverXbox.getLeftTriggerAxis() < 0.1 && m_driverXbox.getRightTriggerAxis() < 0.1 && becreamptuous == false && dontBringIn == false){ //if nothing is being pressed, have the motors spin in slowly
-            if (firstPass == false) {
-                startClock = true;
-                firstPass = true;
-            }
-            keepSpinning(3000);
             m_leftPincerMotor.set(intakeSpeed);
         } else { //if you are pressing a trigger though, set the speed normally
             m_leftPincerMotor.set(intakeSpeed);
@@ -220,7 +228,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     
-
+    
 
     //This is a function used in auton to spin the motors in
     public static void spinMotors(boolean reversed) {
@@ -231,5 +239,5 @@ public class IntakeSubsystem extends SubsystemBase {
         }
     }
 
-} */
+} 
 

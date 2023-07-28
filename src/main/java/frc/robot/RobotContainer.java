@@ -36,13 +36,16 @@ public class RobotContainer {
     private final JoystickButton highPlace = new JoystickButton(driver, XboxController.Button.kX.value);
     private final JoystickButton midPlace = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton claw = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
+    private final JoystickButton drop = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
     private final JoystickButton intake = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final VisionSubsystem s_Vision = new VisionSubsystem(s_Swerve);
     private final ArmSubsystem s_Arm = new ArmSubsystem(driver);
     private final PneumaticSubsystem s_Pneumatic = new PneumaticSubsystem();
-    public AutoManager autoManager = new AutoManager(s_Swerve, s_Arm, s_Pneumatic);
+    private final IntakeSubsystem s_Intake = new IntakeSubsystem();
+    public AutoManager autoManager = new AutoManager(s_Swerve, s_Arm, s_Pneumatic, s_Intake);
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -86,7 +89,10 @@ public class RobotContainer {
         highPlace.onTrue(new HighPlace(s_Arm));
         midPlace.onTrue(new MidPlace(s_Arm));
         claw.onTrue(new InstantCommand(() -> s_Pneumatic.toggleClawState()));
-        intake.onTrue(new InstantCommand(() -> s_Pneumatic.toggleIntakeState()));
+        drop.onTrue(new InstantCommand(() -> s_Pneumatic.setIntakeState(true)));
+        drop.onFalse(new InstantCommand(() -> s_Pneumatic.setIntakeState(false)));
+        intake.whileTrue(new InstantCommand(() -> s_Intake.intake()));
+        intake.whileFalse(new InstantCommand(() -> s_Intake.holdBall()));
     }
 
     /**

@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.RobotContainer;
 import frc.robot.commands.HighPlace;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
 import frc.robot.subsystems.Swerve;
 import frc.robot.commands.*;
@@ -33,7 +34,7 @@ public class AutoManager {
 
 
 
-    public AutoManager(Swerve swerveDriveSubsystem, ArmSubsystem armSubsystem, PneumaticSubsystem pneumaticSubsystem) {
+    public AutoManager(Swerve swerveDriveSubsystem, ArmSubsystem armSubsystem, PneumaticSubsystem pneumaticSubsystem, IntakeSubsystem intakeSubsystem) {
         eventMap.put("Hello", new PrintCommand("Hello"));
         eventMap.put("HighPlace", new HighPlace(armSubsystem));
         eventMap.put("MidPlace", new MidPlace(armSubsystem));
