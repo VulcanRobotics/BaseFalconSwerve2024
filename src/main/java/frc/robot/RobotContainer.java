@@ -23,7 +23,7 @@ import frc.robot.AutoManager;
 public class RobotContainer {
     /* Controllers */
     private final XboxController driver = new XboxController(0);
-
+    private final Joystick operator = new Joystick(1);
     /* Drive Controls */
     private final int translationAxis = XboxController.Axis.kLeftY.value;
     private final int strafeAxis = XboxController.Axis.kLeftX.value;
@@ -33,12 +33,12 @@ public class RobotContainer {
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kBack.value);
     private final JoystickButton calibrateEncoders = new JoystickButton(driver, XboxController.Button.kStart.value);
-    private final JoystickButton highPlace = new JoystickButton(driver, XboxController.Button.kX.value);
-    private final JoystickButton midPlace = new JoystickButton(driver, XboxController.Button.kA.value);
-    private final JoystickButton claw = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
+    private final JoystickButton highPlace = new JoystickButton(operator, 5);
+    private final JoystickButton midPlace = new JoystickButton(operator, 4);
+    private final JoystickButton originPlace = new JoystickButton(operator, 2);
+    private final JoystickButton claw = new JoystickButton(operator, 1);
     private final JoystickButton drop = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
     private final JoystickButton intake = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
-
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final VisionSubsystem s_Vision = new VisionSubsystem(s_Swerve);
@@ -59,15 +59,16 @@ public class RobotContainer {
                 () -> robotCentric.getAsBoolean()
             )
         );
-
-       ///s_Arm.setDefaultCommand(new InstantCommand(() -> s_Arm.stopMovement(), s_Arm));
-
+        
+        
        
 
 
 
         // Configure the button bindings
         configureButtonBindings();
+
+        //s_Arm.setDefaultCommand(new InstantCommand(() -> s_Arm.joystickMovement(operator.getX(), operator.getY(), operator.getZ()), s_Arm));
     }
 
     public Swerve getSwerve() {
@@ -86,13 +87,20 @@ public class RobotContainer {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         calibrateEncoders.onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
-        highPlace.onTrue(new HighPlace(s_Arm));
-        midPlace.onTrue(new MidPlace(s_Arm));
+        highPlace.whileTrue(new HighPlace(s_Arm));
+        highPlace.onFalse(new JoystickMovement(s_Arm));
+        midPlace.whileTrue(new MidPlace(s_Arm));
+        midPlace.onFalse(new JoystickMovement(s_Arm));
+        originPlace.whileTrue(new OriginPlace(s_Arm));
+        originPlace.onFalse(new JoystickMovement(s_Arm));
         claw.onTrue(new InstantCommand(() -> s_Pneumatic.toggleClawState()));
         drop.onTrue(new InstantCommand(() -> s_Pneumatic.setIntakeState(true)));
         drop.onFalse(new InstantCommand(() -> s_Pneumatic.setIntakeState(false)));
         intake.whileTrue(new InstantCommand(() -> s_Intake.intake()));
         intake.whileFalse(new InstantCommand(() -> s_Intake.holdBall()));
+        
+        
+
     }
 
     /**

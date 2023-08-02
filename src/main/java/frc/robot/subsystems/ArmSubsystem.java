@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Joystick;
 
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.CANSparkMax;
@@ -148,11 +149,17 @@ public class ArmSubsystem extends SubsystemBase {
         }
 
         if (towerDone && elbowDone){
+            mElbowSpeed = 0.0;
+            mTowerSpeed = 0.0;
             return true;
         } else{
             return false;
         }
         
+        
+
+
+
 
     }
 
@@ -209,21 +216,16 @@ public class ArmSubsystem extends SubsystemBase {
         mTowerSpeed = 0.0;
     }
 
-    
-    @Override
-    public void periodic(){
 
-        if (!isCommandRunning) {
-            mElbowSpeed = 0;
-            mTowerSpeed = 0;
-        }
-       
 
-        if (firstLoop){
-            firstLoop = false;
 
-            towerPID.reset(m_stringPotentiometerTower.get());
-            elbowPID.reset(m_stringPotentiometerElbow.get());
+    public void joystickMovement(double x, double y, double z) {
+        mElbowSpeed = x;
+        mTowerSpeed = y;
+        if (Math.abs(z) > 0.5) {
+            mWristSpeed = z/3;
+        } else {
+            mWristSpeed = 0.0;
         }
 
         boolean isArmOnTop = m_towerUpProximity.get();
@@ -231,34 +233,6 @@ public class ArmSubsystem extends SubsystemBase {
         
         boolean isElbowOnTop = !m_ElbowUpProximity.get();
         boolean isElbowOnBottom = !m_ElbowDownProximity.get();
-
-        towerPID.setTolerance(0.01, 0);
-        
-        
-
-        //Built in encoder values 
-         m_wristEncoder = m_encoderWrist.getPosition();
-
-        if(controller.getBButton()) {
-            highPlace();
-        }
-        /* 
-        if (controller.getRightBumper()) {
-            mTowerSpeed = 0.3;
-        }
-
-
-        if (controller.getLeftBumper()) {
-            mTowerSpeed = -0.3;
-        }
-
-        if (controller.getRightTriggerAxis() > 0.5) {
-            mElbowSpeed = 0.3;
-        }
-
-        if (controller.getLeftTriggerAxis() > 0.5) {
-            mElbowSpeed = -0.3;
-        } */
 
         //Limit Switches to make any last changes to the speed before setting it, must go last! KEEP
         if (isArmOnTop && mTowerSpeed > 0) {
@@ -299,6 +273,76 @@ public class ArmSubsystem extends SubsystemBase {
         mTower.set(ControlMode.PercentOutput, mTowerSpeed);
         mElbow.set(ControlMode.PercentOutput, mElbowSpeed);
         m_Wrist.set(mWristSpeed);
+
+    }
+
+    
+    @Override
+    public void periodic(){
+
+        
+       
+
+        if (firstLoop){
+            firstLoop = false;
+
+            towerPID.reset(m_stringPotentiometerTower.get());
+            elbowPID.reset(m_stringPotentiometerElbow.get());
+        }
+
+        boolean isArmOnTop = m_towerUpProximity.get();
+        boolean isArmOnBottom = m_towerDownProximity.get();
+        
+        boolean isElbowOnTop = !m_ElbowUpProximity.get();
+        boolean isElbowOnBottom = !m_ElbowDownProximity.get();
+
+        towerPID.setTolerance(0.01, 0);
+        
+        
+
+        //Built in encoder values 
+         m_wristEncoder = m_encoderWrist.getPosition();
+
+
+        //Limit Switches to make any last changes to the speed before setting it, must go last! KEEP
+        if (isArmOnTop && mTowerSpeed > 0) {
+            mTowerSpeed = 0;
+            if (m_useTowerEncoder == false) {
+                m_useTowerEncoder = true;
+                m_towerEncoderZero = mTower.getSelectedSensorPosition();
+            }
+        } else if (isArmOnBottom && mTowerSpeed < 0) {
+            mTowerSpeed = 0;
+            if (m_useTowerEncoder == false) {
+                m_useTowerEncoder = true;
+                m_towerEncoderZero = mTower.getSelectedSensorPosition() - m_towerEncoderMax;
+            }
+        }
+
+        if (isElbowOnTop && mElbowSpeed > 0) { 
+            mElbowSpeed = 0;
+            if (m_useElbowEncoder == false) {
+                m_useElbowEncoder = true;
+                m_elbowEncoderZero = mElbow.getSelectedSensorPosition();
+            }
+        } else if (isElbowOnBottom && mElbowSpeed < 0) { 
+            mElbowSpeed = 0;
+            if (m_useElbowEncoder == false) {
+                m_useElbowEncoder = true;
+                m_elbowEncoderZero = mElbow.getSelectedSensorPosition() - m_elbowEncoderMax;
+            }
+        }
+        //////////
+        //Claw limit?
+        if (m_PotentiometerWrist.get() < -5 && mWristSpeed < 0){
+            mWristSpeed = 0;
+        } else if (m_PotentiometerWrist.get() > 5 && mWristSpeed > 0){
+            mWristSpeed = 0;
+        }
+
+        mTower.set(ControlMode.PercentOutput, mTowerSpeed);
+        mElbow.set(ControlMode.PercentOutput, mElbowSpeed);
+        m_Wrist.set(mWristSpeed); 
         
 
 
