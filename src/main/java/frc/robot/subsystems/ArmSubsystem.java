@@ -40,8 +40,8 @@ public class ArmSubsystem extends SubsystemBase {
     private static AnalogPotentiometer m_stringPotentiometerElbow = new AnalogPotentiometer(new AnalogInput(1));
     private static AnalogPotentiometer m_PotentiometerWrist = new AnalogPotentiometer(new AnalogInput(2));
     //stating the PID controllers
-    private static ProfiledPIDController towerPID = new ProfiledPIDController(9,0, 0, new TrapezoidProfile.Constraints(1, 1));
-    private static ProfiledPIDController elbowPID = new ProfiledPIDController(12, 0, 0, new TrapezoidProfile.Constraints(1, 1));
+    private static ProfiledPIDController towerPID = new ProfiledPIDController(9,0.5, 0, new TrapezoidProfile.Constraints(1, 1));
+    private static ProfiledPIDController elbowPID = new ProfiledPIDController(9, 0.5, 0, new TrapezoidProfile.Constraints(1, 1));
     //stating the Talon 500 motors for the tower
     private static TalonFX mTower = new TalonFX(13, "roborio");
     private static TalonFX mElbow = new TalonFX(12, "roborio");
@@ -171,10 +171,10 @@ public class ArmSubsystem extends SubsystemBase {
             return true;
         } 
         return false;*/
-        return goToPosition(.522, .801, false, true);
+        return goToPosition(.51, .77, false, true);
     }
     public boolean midPlace(){
-        return goToPosition(.336, .805, false, false);
+        return goToPosition(.37, .71, false, false);
     }
     public boolean humanPlayerGrab(){
         return goToPosition(.368, .755, false, false);
@@ -194,7 +194,7 @@ public class ArmSubsystem extends SubsystemBase {
         if (Setup){
             return goToPosition(0.39, 0.662, false, false);
         } else {
-            return goToPosition(0.378, 0.656, false, false);
+            return goToPosition(0.37, 0.63, false, false);
         }
     }
 
@@ -343,6 +343,9 @@ public class ArmSubsystem extends SubsystemBase {
         mTower.set(ControlMode.PercentOutput, mTowerSpeed);
         mElbow.set(ControlMode.PercentOutput, mElbowSpeed);
         m_Wrist.set(mWristSpeed); 
+
+        SmartDashboard.putNumber("String Potentiometer Tower", m_stringPotentiometerTower.get());
+        SmartDashboard.putNumber("String Potentiometer Elbow", m_stringPotentiometerElbow.get());
         
 
 

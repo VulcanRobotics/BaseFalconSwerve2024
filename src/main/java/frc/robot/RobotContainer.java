@@ -59,6 +59,10 @@ public class RobotContainer {
                 () -> robotCentric.getAsBoolean()
             )
         );
+
+        s_Arm.setDefaultCommand(
+            new JoystickMovement(s_Arm, operator)
+        );
         
         
        
@@ -88,11 +92,11 @@ public class RobotContainer {
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         calibrateEncoders.onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
         highPlace.whileTrue(new HighPlace(s_Arm));
-        highPlace.onFalse(new JoystickMovement(s_Arm));
+        //highPlace.onFalse(new JoystickMovement(s_Arm, operator));
         midPlace.whileTrue(new MidPlace(s_Arm));
-        midPlace.onFalse(new JoystickMovement(s_Arm));
+        //midPlace.onFalse(new JoystickMovement(s_Arm, operator));
         originPlace.whileTrue(new OriginPlace(s_Arm));
-        originPlace.onFalse(new JoystickMovement(s_Arm));
+        //originPlace.onFalse(new JoystickMovement(s_Arm, operator));
         claw.onTrue(new InstantCommand(() -> s_Pneumatic.toggleClawState()));
         drop.onTrue(new InstantCommand(() -> s_Pneumatic.setIntakeState(true)));
         drop.onFalse(new InstantCommand(() -> s_Pneumatic.setIntakeState(false)));

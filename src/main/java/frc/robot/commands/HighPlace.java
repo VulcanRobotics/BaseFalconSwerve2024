@@ -21,6 +21,7 @@ public class HighPlace extends CommandBase {
 
     public HighPlace(ArmSubsystem arm) {
         armSubsystem = arm;
+        addRequirements(armSubsystem);
     }
     
     @Override

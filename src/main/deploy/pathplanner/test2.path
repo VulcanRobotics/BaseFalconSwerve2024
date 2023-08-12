@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.8015252818700083,
-        "y": 3.2247106334490443
+        "x": 1.7739809993508875,
+        "y": 3.171013779527559
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.801525281870008,
-        "y": 3.2247106334490443
+        "x": 2.7739809993508873,
+        "y": 3.171013779527559
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -19,26 +19,26 @@
         "names": [
           "HighPlace"
         ],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
+        "executionBehavior": "sequential",
+        "waitBehavior": "after",
         "waitTime": 1.0
       }
     },
     {
       "anchorPoint": {
-        "x": 7.055582675401462,
-        "y": 3.31349020510541
+        "x": 4.291006529929726,
+        "y": 2.7877713307509944
       },
       "prevControl": {
-        "x": 7.055582675401462,
-        "y": 2.31349020510541
+        "x": 4.819934696293005,
+        "y": 2.8024676413936156
       },
       "nextControl": {
-        "x": 7.055582675401462,
-        "y": 2.31349020510541
+        "x": 3.762078363566449,
+        "y": 2.773075020108373
       },
       "holonomicAngle": 0,
-      "isReversal": true,
+      "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
@@ -51,12 +51,12 @@
     },
     {
       "anchorPoint": {
-        "x": 1.8230968041797195,
-        "y": 2.762662542686196
+        "x": 2.8588198148618518,
+        "y": 2.41769214962041
       },
       "prevControl": {
-        "x": 2.6387554945248777,
-        "y": 2.4996871295825915
+        "x": 3.482814396184346,
+        "y": 2.5432904398794896
       },
       "nextControl": null,
       "holonomicAngle": 0,
@@ -65,14 +65,22 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [
-          "HighPlace"
-        ],
+        "names": [],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
       }
     }
   ],
-  "markers": []
+  "maxVelocity": 1.0,
+  "maxAcceleration": 1.0,
+  "isReversed": null,
+  "markers": [
+    {
+      "position": 0.44137073863636334,
+      "names": [
+        "HighPlace"
+      ]
+    }
+  ]
 }

@@ -19,10 +19,12 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class JoystickMovement extends CommandBase {
 
     ArmSubsystem armSubsystem;
-    private final Joystick operator = new Joystick(1);
+    private final Joystick operator;
 
-    public JoystickMovement(ArmSubsystem arm) {
+    public JoystickMovement(ArmSubsystem arm, Joystick joystick) {
         armSubsystem = arm;
+        addRequirements(armSubsystem);
+        operator = joystick;
 
     }
     
@@ -44,7 +46,7 @@ public class JoystickMovement extends CommandBase {
     public void execute() {
         
         if (!arePositionsSet()) {
-            armSubsystem.joystickMovement(operator.getX(), operator.getY(), operator.getZ());
+            armSubsystem.joystickMovement(operator.getX(), -operator.getY(), operator.getZ());
         }
     }
 
