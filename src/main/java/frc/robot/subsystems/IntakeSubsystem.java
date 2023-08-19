@@ -28,12 +28,17 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private double startTime = System.currentTimeMillis();
     private double elapsedtime = 0.0;
+
+    private double holdstartTime = System.currentTimeMillis();
+    private double holdelapsedtime = 0.0;
+
     private boolean startClock = true;
     private static boolean haveCube = false;
     private boolean haveCubeOnce = false;
     private boolean becreamptuous = false; 
     public static boolean dontBringIn = false;
-    
+    public boolean spitting = false;
+    public boolean startHolding = false;
     private boolean firstPass = true;
 
     public boolean getIntakePhotogate() {
@@ -43,9 +48,9 @@ public class IntakeSubsystem extends SubsystemBase {
     public void keepSpinning(double time){
         
         if (startClock == true){
-            startTime = System.currentTimeMillis();
-            startClock = false;
-            elapsedtime = 0.0;
+        startTime = System.currentTimeMillis();
+        startClock = false;
+        elapsedtime = 0.0;
         }
         else {
             elapsedtime = System.currentTimeMillis() - startTime;
@@ -93,26 +98,14 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void intake() {
         intakeSpeed = 0.75;
-        dontBringIn = false;
-        if (!haveCube) {
-            haveCubeOnce = false;
-        }
     }
 
     public void spit() {
         intakeSpeed = -0.15;
-        haveCube = false;
-        becreamptuous = true;
-        dontBringIn = true;
     }
 
     public void holdBall() {
-        if (firstPass == false) {
-            startClock = true;
-            firstPass = true;
-        }
-        keepSpinning(3000);
-        m_leftPincerMotor.set(intakeSpeed);
+        intakeSpeed = 0.0;
     }
 
 
@@ -123,104 +116,19 @@ public class IntakeSubsystem extends SubsystemBase {
 
         
         //Detects whether the photogate senses something or not, changing the variable depending on the value
-        if (getIntakePhotogate()) {
-            haveCube = true;
-        } else {
-            haveCube = false;
-        }
-
-        //if the left trigger is pushed, the intake goes down and the clock (for the function) turns on if the cube is sensed
-        /*if (m_driverXbox.getLeftTriggerAxis() > 0.1){
-            PneumaticSubsystem.setIntakeState(true);
-            intakeSpeed = 0.75;
-            dontBringIn = false;
-            if (!haveCube) {
-                haveCubeOnce = false;
-            }
-        } else {
-            PneumaticSubsystem.setIntakeState(false);
-        }
-        //this just reverses the motors, spitting the cube out
-        if (m_driverXbox.getRightTriggerAxis() > 0.1 || Inputs.m_operatorControl.getRawButton(9) || TowerSubsystem.autoEject == true){
-            intakeSpeed = -0.15;
-            haveCube = false;
-            becreamptuous = true;
-            dontBringIn = true;
-
-            if (TowerSubsystem.autoEject == true) {
-                TowerSubsystem.autoEject = false;
-            }
-
-            //PneumaticSubsystem.setEjectState(true);
-        } else {
-            //PneumaticSubsystem.setEjectState(false);
-        }*/
-
-
-
-
-        //these are cases used for autonomous
-        /*switch (Inputs.autonRequestIntakeGoTo){
-            case IGNORE: 
-
-                break;
-
-            case DOWN:
-                PneumaticSubsystem.setIntakeState(true);
-                break;
-            case INTAKE:
-                if (!PneumaticSubsystem.intakeDeployed){
-                    PneumaticSubsystem.setIntakeState(true);
-                }
-                
-                
-                intakeSpeed = 1;
-                //m_leftPincerMotor.set(intakeSpeed);
-                becreamptuous = true;
-                break;
-
-            
-
-
-
-            
-            case UP:
-                PneumaticSubsystem.setIntakeState(false);
-
-                break;
-
-            case GRABINTAKE:
-                intakeSpeed = -0.2;
-                haveCube = false;
-                becreamptuous = true;
-                dontBringIn = true;
-                //m_leftPincerMotor.set(intakeSpeed);
-
-                //autoPinch();
-
-                break;
-                
-            default:
-                break;
-        }*/
-        
-
+        haveCube = getIntakePhotogate();
         
         
         //This finally goes over the conditions and gives the motor power dependent on which is satified
+        
         if (haveCube) { //If you have the cube, stop the motors
-            if (haveCubeOnce == false) {
-                startClock = true;
-                haveCubeOnce = true;
-            }
-            firstPass = false;
-            keepSpinning(250);
+            //keepSpinning(250);
+            intakeSpeed = 0.0;
             m_leftPincerMotor.set(intakeSpeed);
-        } else { //if you are pressing a trigger though, set the speed normally
-            m_leftPincerMotor.set(intakeSpeed);
-            becreamptuous = false;
         }
-
+        else {
+            m_leftPincerMotor.set(intakeSpeed);
+        }
         
 
         SmartDashboard.putBoolean("Intake Deployed", PneumaticSubsystem.intakeDeployed);
