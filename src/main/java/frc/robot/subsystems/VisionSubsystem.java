@@ -19,15 +19,31 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+
     //oonga boonga robot bullshit
     public class VisionSubsystem extends SubsystemBase{
 
         NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-rear");
+        NetworkTable front = NetworkTableInstance.getDefault().getTable("limelight-front");
+
+
+        //stating the data given from the tables that the limelightes write on
+        NetworkTableEntry f_tx = front.getEntry("tx");
+        NetworkTableEntry f_ty = front.getEntry("ty");
+        NetworkTableEntry f_ta = front.getEntry("ta");
+        NetworkTableEntry f_tv = front.getEntry("tv");
+
 
         //Latencies below are necessary for pose estimation with WPIlib.
         NetworkTableEntry doesTargetExist = table.getEntry("tv"); 
         NetworkTableEntry pipelineLatency = table.getEntry("tl");
         NetworkTableEntry captureLatency = table.getEntry("cl");
+
+        ProfiledPIDController visionAdjustPID = new ProfiledPIDController(0.02, 0, 0, new TrapezoidProfile.Constraints(1, 1));
+        ProfiledPIDController turnAdjustPID = new ProfiledPIDController(0.03, 0, 0, new TrapezoidProfile.Constraints(1, 1));
+
 
         //Botpose value
 
@@ -86,6 +102,15 @@ import edu.wpi.first.networktables.NetworkTableInstance;
             }
         }
     
+        public double[] visionAdjustX() {
+
+            double dist = f_tx.getDouble(0.0);
+            return new double[]{visionAdjustPID.calculate(dist, 0), turnAdjustPID.calculate(dist, 0)};
+     
+            
+        }
+
+
         @Override
         public void periodic() {
             double[] bluePose = table.getEntry("botpose_wpiblue").getDoubleArray(new double[6]); 

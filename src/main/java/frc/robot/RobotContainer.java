@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.simulation.JoystickSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.autos.*;
@@ -40,7 +42,7 @@ public class RobotContainer {
     //private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kBack.value);
     //private final JoystickButton calibrateEncoders = new JoystickButton(driver, XboxController.Button.kStart.value);
     
-    //private final JoystickButton zeroGyro = new JoystickButton(driver, CommandXboxController.);
+    //private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton highPlace = new JoystickButton(operator, 5);
     private final JoystickButton midPlace = new JoystickButton(operator, 4);
     private final JoystickButton originPlace = new JoystickButton(operator, 2);
@@ -75,7 +77,7 @@ public class RobotContainer {
         
         
        
-
+        
 
 
         // Configure the button bindings
@@ -119,6 +121,8 @@ public class RobotContainer {
         driver.rightTrigger(0.5).onFalse(new InstantCommand(() -> s_Intake.holdBall()));
         driver.rightTrigger(0.5).onTrue(new InstantCommand(() -> s_Pneumatic.setIntakeState(true)));
         driver.rightTrigger(0.5).onFalse(new InstantCommand(() -> s_Pneumatic.setIntakeState(false)));
+        driver.y().onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+        driver.start().onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
         
         
         /*if (spit > 0.5){
@@ -144,7 +148,11 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
         //return new exampleAuto(s_Swerve);
-        return autoManager.getAuton();
+        return new SequentialCommandGroup(
+            new InstantCommand(()->s_Swerve.zeroGyro()), 
+            new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()),
+            new WaitCommand(0.2),
+            autoManager.getAuton());
         
     }
 }

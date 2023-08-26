@@ -171,7 +171,7 @@ public class ArmSubsystem extends SubsystemBase {
             return true;
         } 
         return false;*/
-        return goToPosition(.51, .77, false, true);
+        return goToPosition(.52, .8, false, true);
     }
     public boolean midPlace(){
         return goToPosition(.37, .71, false, false);

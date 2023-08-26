@@ -41,11 +41,15 @@ public class IntakeSubsystem extends SubsystemBase {
     public boolean startHolding = false;
     private boolean firstPass = true;
 
+    private boolean kstartClock = false;
+    private double kstartTime = 0.0;
+    private double kelapsedtime = 0.0;
+
     public boolean getIntakePhotogate() {
         return m_intakePhotogate.get();
     }
 
-    public void keepSpinning(double time){
+    public void spit(double time){
         
         if (startClock == true){
         startTime = System.currentTimeMillis();
@@ -58,31 +62,31 @@ public class IntakeSubsystem extends SubsystemBase {
     
 
         if (elapsedtime < time) { //currently 0.5 seconds
-            intakeSpeed = 0.25;
+            intakeSpeed = -0.15;
         } else {
             intakeSpeed = 0.0;
         }
    
     }
 
-    public void hold3(){
+    public void keepSpinning(double ktime){
 
 
-        if (startClock == true){
-            startTime = System.currentTimeMillis();
-            startClock = false;
-            elapsedtime = 0.0;
+        if (kstartClock == true){
+            kstartTime = System.currentTimeMillis();
+            kstartClock = false;
+            kelapsedtime = 0.0;
         }
         else {
-            elapsedtime = System.currentTimeMillis() - startTime;
+            kelapsedtime = System.currentTimeMillis() - startTime;
         }
     
 
-        if (elapsedtime < 3000) { //currently 0.5 seconds
-            intakeSpeed = 0.5;
-        } else {
+        if (kelapsedtime < ktime) { //currently 0.5 seconds
+            intakeSpeed = 0.25;
+        } /*else {
             intakeSpeed = 0.0;
-        }
+        }*/
    
     }
 
@@ -101,7 +105,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void spit() {
-        intakeSpeed = -0.15;
+        startClock = true;
     }
 
     public void holdBall() {
@@ -122,11 +126,16 @@ public class IntakeSubsystem extends SubsystemBase {
         //This finally goes over the conditions and gives the motor power dependent on which is satified
         
         if (haveCube) { //If you have the cube, stop the motors
-            //keepSpinning(250);
             intakeSpeed = 0.0;
+            spit(500);
+            //keepSpinning(250);
             m_leftPincerMotor.set(intakeSpeed);
         }
         else {
+            if (intakeSpeed < 0.0) {
+                intakeSpeed = 0.0;
+            }
+            //kstartClock = true;
             m_leftPincerMotor.set(intakeSpeed);
         }
         
