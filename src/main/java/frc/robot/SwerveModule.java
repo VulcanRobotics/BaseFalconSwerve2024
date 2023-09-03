@@ -4,15 +4,22 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 
 import frc.lib.math.Conversions;
 import frc.lib.util.CTREModuleState;
 import frc.lib.util.SwerveModuleConstants;
+import frc.robot.Constants.RobotType;
+import frc.robot.subsystems.drive.PhysicsSim;
+
+import org.littletonrobotics.junction.AutoLog;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.sensors.WPI_CANCoder;
+import com.ctre.phoenix.sensors.CANCoderSimCollection;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveModule {
@@ -20,9 +27,11 @@ public class SwerveModule {
     private Rotation2d angleOffset;
     private Rotation2d lastAngle;
 
-    private TalonFX mAngleMotor;
-    private TalonFX mDriveMotor;
-    private CANCoder angleEncoder;
+    private WPI_TalonFX mAngleMotor;
+    private WPI_TalonFX mDriveMotor;
+    private WPI_CANCoder angleEncoder;
+    private CANCoderSimCollection cancoder_sim;
+    private double turnAbsolutePositionRad = 0.0;
 
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(Constants.Swerve.driveKS, Constants.Swerve.driveKV, Constants.Swerve.driveKA);
 
@@ -46,18 +55,25 @@ public class SwerveModule {
 
     public SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants){
         this.moduleNumber = moduleNumber;
-        this.angleOffset = moduleConstants.angleOffset;
+        
+        if (Constants.getRobot() == RobotType.ROBOT_SIMBOT) {
+            this.angleOffset = new Rotation2d(0.0);
+        }
+        else {
+            this.angleOffset = moduleConstants.angleOffset;
+        }
         
         /* Angle Encoder Config */
-        angleEncoder = new CANCoder(moduleConstants.cancoderID, "DriveSubsystemCANivore");
+        angleEncoder = new WPI_CANCoder(moduleConstants.cancoderID, "DriveSubsystemCANivore");
         configAngleEncoder();
+        cancoder_sim = angleEncoder.getSimCollection();
 
         /* Angle Motor Config */
-        mAngleMotor = new TalonFX(moduleConstants.angleMotorID, "DriveSubsystemCANivore");
+        mAngleMotor = new WPI_TalonFX(moduleConstants.angleMotorID, "DriveSubsystemCANivore");
         configAngleMotor();
 
         /* Drive Motor Config */
-        mDriveMotor = new TalonFX(moduleConstants.driveMotorID, "DriveSubsystemCANivore");
+        mDriveMotor = new WPI_TalonFX(moduleConstants.driveMotorID, "DriveSubsystemCANivore");
         configDriveMotor();
 
         lastAngle = getState().angle;

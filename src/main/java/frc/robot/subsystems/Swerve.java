@@ -1,14 +1,19 @@
 package frc.robot.subsystems;
 
 import frc.robot.SwerveModule;
+import frc.robot.SwerveModuleInputsAutoLogged;
+import frc.robot.Constants.RobotType;
+import frc.robot.subsystems.drive.PhysicsSim;
 import frc.robot.Constants;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.hal.simulation.*;
+import edu.wpi.first.hal.*;
 
-import com.ctre.phoenix.sensors.Pigeon2;
+//import com.ctre.phoenix.sensors.Pigeon2;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -22,11 +27,22 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 
+import org.littletonrobotics.junction.Logger;
+
 public class Swerve extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     public SwerveDrivePoseEstimator swerveDrivePoseEstimator;
     public SwerveModule[] mSwerveMods;
+    private double[] lastModulePositionsRad = new double[] {0.0, 0.0, 0.0, 0.0};
+    private Translation2d fieldVelocity = new Translation2d();
+
+    private final SwerveModuleInputsAutoLogged[] swerveModuleInputs =
+    new SwerveModuleInputsAutoLogged[] {new SwerveModuleInputsAutoLogged(),
+        new SwerveModuleInputsAutoLogged(), new SwerveModuleInputsAutoLogged(),
+        new SwerveModuleInputsAutoLogged()};
+
     public AHRS m_gyro;
+    private double simYaw = 0.0;
 
     public Swerve() {
         m_gyro = new AHRS(SPI.Port.kMXP);
@@ -236,5 +252,10 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("Estimator Rot", swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees());
 
         
+    }
+
+    /** Returns the current odometry rotation. */
+    public Rotation2d getRotation() {
+        return swerveOdometry.getPoseMeters().getRotation();
     }
 }

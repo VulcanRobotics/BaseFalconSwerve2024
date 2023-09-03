@@ -4,22 +4,37 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.TimedRobot;
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggedPowerDistribution;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
+//import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
+import frc.robot.util.Alert;
+import frc.robot.util.Alert.AlertType;
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
+// public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
   public static CTREConfigs ctreConfigs;
-
   private Command m_autonomousCommand;
-
   private RobotContainer m_robotContainer;
+
+  private final Alert logNoFileAlert =
+      new Alert("No log path set for current robot. Data will NOT be logged.",
+          AlertType.WARNING);
+  private final Alert logReceiverQueueAlert =
+      new Alert("Logging queue exceeded capacity, data will NOT be logged.",
+          AlertType.ERROR);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -27,6 +42,38 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+
+    Logger logger = Logger.getInstance();
+    setUseTiming(Constants.getMode() != Constants.Mode.REPLAY);
+    logger.recordMetadata("Robot", Constants.getRobot().toString());
+    logger.recordMetadata("TuningMode", Boolean.toString(Constants.tuningMode));
+    logger.recordMetadata("RuntimeType", getRuntimeType().toString());
+  
+    switch (Constants.getMode()) {
+      case REAL:
+        String folder = Constants.logFolders.get(Constants.getRobot());
+        if (folder != null) {
+          logger.addDataReceiver(new WPILOGWriter(folder));
+        } else {
+          logNoFileAlert.set(true);
+        }
+        logger.addDataReceiver(new NT4Publisher());
+        LoggedPowerDistribution.getInstance();
+        break;
+
+      case SIM:
+        logger.addDataReceiver(new NT4Publisher());
+        break;
+
+      case REPLAY:
+        String path = LogFileUtil.findReplayLog();
+        logger.setReplaySource(new WPILOGReader(path));
+        logger.addDataReceiver(
+            new WPILOGWriter(LogFileUtil.addPathSuffix(path, "_sim")));
+        break;
+    }
+    logger.start();
+
     ctreConfigs = new CTREConfigs();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
@@ -59,12 +106,10 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    System.out.println("autonomousInit().................................");
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
-      //System.out.println("m_autonomousCommand.schedule()......................");
       m_autonomousCommand.schedule();
     }
   }

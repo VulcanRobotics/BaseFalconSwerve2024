@@ -5,15 +5,16 @@ import javax.swing.JOptionPane;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.PS4Controller.Button;
-import edu.wpi.first.wpilibj.XboxController.Axis;
-import edu.wpi.first.wpilibj.simulation.JoystickSim;
+//import edu.wpi.first.wpilibj.PS4Controller.Button;
+//import edu.wpi.first.wpilibj.XboxController.Axis;
+//import edu.wpi.first.wpilibj.simulation.JoystickSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+
 import frc.robot.autos.*;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
@@ -58,6 +59,7 @@ public class RobotContainer {
     private final IntakeSubsystem s_Intake = new IntakeSubsystem();
     public AutoManager autoManager = new AutoManager(s_Swerve, s_Arm, s_Pneumatic, s_Intake);
 
+    private Boolean isFieldRelative = true;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -66,7 +68,7 @@ public class RobotContainer {
                 s_Swerve, 
                 () -> -driver.getRawAxis(translationAxis), 
                 () -> -driver.getRawAxis(strafeAxis), 
-                () -> -driver.getRawAxis(rotationAxis), 
+                () -> -driver.getRawAxis(rotationAxis),
                 //() -> driver.back().getAsBoolean(),
                 () -> isFieldRelative
             )
