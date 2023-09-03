@@ -1,6 +1,10 @@
 bin/*
 build/*
 .gradle/*
-*.DS_Store
+.DS_Store
 *.log
+src/main/deploy/pathplanner/.DS_Store
+src/main/deploy/.DS_Store
+src/main/.DS_Store
+src/.DS_Store
 *.class
