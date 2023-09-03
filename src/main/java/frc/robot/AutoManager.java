@@ -29,8 +29,8 @@ public class AutoManager {
 
 
 
-    //List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup("3Piece2", new PathConstraints(1.5, 4));
-    List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup("simTest", new PathConstraints(1.5, 4));
+    List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup("3Piece2", new PathConstraints(1.5, 4));
+
 
 
 

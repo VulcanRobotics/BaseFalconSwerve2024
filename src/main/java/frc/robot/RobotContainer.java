@@ -39,7 +39,7 @@ public class RobotContainer {
     
     /* Driver Buttons */
     
-    private final JoystickButton robotCentric = new JoystickButton(driver.getHID(), XboxController.Button.kBack.value);
+    //private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kBack.value);
     //private final JoystickButton calibrateEncoders = new JoystickButton(driver, XboxController.Button.kStart.value);
     
     //private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
@@ -67,14 +67,18 @@ public class RobotContainer {
                 () -> -driver.getRawAxis(translationAxis), 
                 () -> -driver.getRawAxis(strafeAxis), 
                 () -> -driver.getRawAxis(rotationAxis), 
-                //() -> driver.back().getAsBoolean(),
-                () -> isFieldRelative
+                () -> driver.back().getAsBoolean()
             )
         );
 
         s_Arm.setDefaultCommand(
             new JoystickMovement(s_Arm, operator)
         );
+        
+        
+       
+        
+
 
         // Configure the button bindings
         configureButtonBindings();
@@ -96,14 +100,8 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         /* Driver Buttons */
-
-        // Switch between field-relative and robot-centric driving
-        robotCentric.onTrue(new InstantCommand(() -> {
-          isFieldRelative = !isFieldRelative;
-        }));
-
-        // zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
-        // calibrateEncoders.onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
+        //zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+        //calibrateEncoders.onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
         highPlace.whileTrue(new HighPlace(s_Arm));
         //highPlace.onFalse(new JoystickMovement(s_Arm, operator));
         midPlace.whileTrue(new MidPlace(s_Arm));
@@ -150,7 +148,6 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
         //return new exampleAuto(s_Swerve);
-        System.out.println("getAutonomousCommand()......................");
         return new SequentialCommandGroup(
             new InstantCommand(()->s_Swerve.zeroGyro()), 
             new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()),
