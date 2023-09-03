@@ -59,10 +59,12 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    System.out.println("autonomousInit().................................");
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
+      //System.out.println("m_autonomousCommand.schedule()......................");
       m_autonomousCommand.schedule();
     }
   }

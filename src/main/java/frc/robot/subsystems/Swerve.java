@@ -78,6 +78,7 @@ public class Swerve extends SubsystemBase {
 
     /* Used by SwerveControllerCommand in Auto */
     public void setModuleStates(ChassisSpeeds desiredChassisSpeeds) {
+        System.out.println("Auton: setModuleStates()....... ");
         SwerveModuleState[] desiredStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(desiredChassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
         
@@ -124,8 +125,9 @@ public class Swerve extends SubsystemBase {
     }
 
     public Rotation2d getYaw() {
-        return (Constants.Swerve.invertGyro) ? Rotation2d.fromDegrees(360 - m_gyro.getYaw()) : Rotation2d.fromDegrees(m_gyro.getYaw());
-
+        //return (Constants.Swerve.invertGyro) ? Rotation2d.fromDegrees(360 - m_gyro.getYaw()) : Rotation2d.fromDegrees(m_gyro.getYaw());
+        // I think the Gyro returns -180 to +180 degrees, so if inverted, we should just flip the sign
+        return (Constants.Swerve.invertGyro) ? Rotation2d.fromDegrees(- m_gyro.getYaw()) : Rotation2d.fromDegrees(m_gyro.getYaw());
     }
 
     public void resetModulesToAbsolute(){
@@ -135,10 +137,90 @@ public class Swerve extends SubsystemBase {
     }
 
     @Override
+    /** New method for Swerve(), necessary for Logging and Simulation with AdvantageKit **/
     public void periodic(){
-        swerveOdometry.update(getYaw(), getModulePositions());  
-        swerveDrivePoseEstimator.update(getYaw(), getModulePositions());
 
+        if (Constants.getRobot() == RobotType.ROBOT_SIMBOT) {
+            // If we're in simulaton, run the next iteration of physics simulation for the Falcon motors
+            PhysicsSim.getInstance().run();
+        }
+        
+        // Log the inputs for each SwerveModule
+        for (int i = 0; i < 4; i++) {
+            mSwerveMods[i].updateInputs(swerveModuleInputs[i]);
+            Logger.getInstance().processInputs("Drive/Module" + Integer.toString(i),
+                swerveModuleInputs[i]);
+        }
+        //System.out.println("turn rad: " + swerveModuleInputs[0].turnVelocityRadPerSec);
+        //System.out.println("cancoder: " + mSwerveMods[0].getCanCoder().getDegrees());
+
+        // Update each turn angle measurements for each SwerveModule
+        Rotation2d[] turnPositions = new Rotation2d[4];
+        for (int i = 0; i < 4; i++) {
+            turnPositions[i] =
+                new Rotation2d(swerveModuleInputs[i].turnAbsolutePositionRad);
+        }
+        //System.out.println("turnPosition[0]: " + turnPositions[0].getDegrees());
+        
+        /** Update robot odometry **/
+
+        //
+        SwerveModuleState[] measuredStatesDiff = new SwerveModuleState[4];
+        for (int i = 0; i < 4; i++) {
+            measuredStatesDiff[i] = new SwerveModuleState(
+                (swerveModuleInputs[i].drivePositionRad - lastModulePositionsRad[i])
+                * Constants.Swerve.chosenModule.wheelDiameter/2.0, turnPositions[i]);
+            lastModulePositionsRad[i] = swerveModuleInputs[i].drivePositionRad;
+        }
+
+        ChassisSpeeds chassisStateDiff =
+            Constants.Swerve.swerveKinematics.toChassisSpeeds(measuredStatesDiff);
+
+        if (Constants.getRobot() == RobotType.ROBOT_SIMBOT) {
+            double simYawChangeRad = chassisStateDiff.omegaRadiansPerSecond * 0.02 * 10;
+            // x 10 fudge factor for more realistic response in simulator
+            // (Otherwise the Gyro yaw update is too slow)
+            double simYawChangeDegrees = 360 * simYawChangeRad / (2*Math.PI);
+            //System.out.println("Yaw change: " + simYawChangeDegrees);
+
+            // Update the simulated Gyro with the new yaw value
+            simYaw += simYawChangeDegrees;
+            if (simYaw > 180.0) {simYaw -= 360.0;}
+            if (simYaw < -180.0) {simYaw += 360.0; }
+            int dev = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
+            SimDouble angle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(dev, "Yaw"));
+            angle.set(simYaw);
+        }
+        
+        // Update and log Gyro value (whether it's simulated or real)
+        Rotation2d currentYaw = getYaw();
+        // System.out.println("Yaw: " + getYaw());
+        swerveOdometry.update(currentYaw, getModulePositions());  
+        swerveDrivePoseEstimator.update(currentYaw, getModulePositions());
+        Logger.getInstance().recordOutput("Gyro_Yaw", currentYaw.getDegrees());
+        
+        // Log odometry pose
+        Logger.getInstance().recordOutput("Odometry/Robot", swerveOdometry.getPoseMeters());
+
+        // Update field velocity
+        SwerveModuleState[] measuredStates =
+            new SwerveModuleState[] {null, null, null, null};
+        for (int i = 0; i < 4; i++) {
+            measuredStates[i] = new SwerveModuleState(
+                swerveModuleInputs[i].driveVelocityRadPerSec * Constants.Swerve.chosenModule.wheelDiameter/2.0,
+                turnPositions[i]);
+            //System.out.println("turnPositions " + i + ": " + turnPositions[i]);
+        }
+
+        ChassisSpeeds chassisState = Constants.Swerve.swerveKinematics.toChassisSpeeds(measuredStates);
+        fieldVelocity = new Translation2d(chassisState.vxMetersPerSecond,
+            chassisState.vyMetersPerSecond).rotateBy(getRotation());
+
+        // Log measured SwerveModule states
+        Logger.getInstance().recordOutput("SwerveModuleStates/Measured",
+            measuredStates);
+        
+        // Update values on Dashboard
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Integrated", mod.getPosition().angle.getDegrees());

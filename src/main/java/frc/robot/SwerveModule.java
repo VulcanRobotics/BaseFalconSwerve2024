@@ -26,6 +26,24 @@ public class SwerveModule {
 
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(Constants.Swerve.driveKS, Constants.Swerve.driveKV, Constants.Swerve.driveKA);
 
+    @AutoLog
+    /** Static class to record module inputs for logging **/
+    public static class SwerveModuleInputs {
+        public double drivePositionRad = 0.0;
+        public double driveVelocityRadPerSec = 0.0;
+        // public double driveVelocityFilteredRadPerSec = 0.0;
+        public double driveAppliedVolts = 0.0;
+        public double[] driveCurrentAmps = new double[] {};
+        public double[] driveTempCelcius = new double[] {};
+
+        public double turnAbsolutePositionRad = 0.0;
+        public double turnPositionRad = 0.0;
+        public double turnVelocityRadPerSec = 0.0;
+        public double turnAppliedVolts = 0.0;
+        public double[] turnCurrentAmps = new double[] {};
+        public double[] turnTempCelcius = new double[] {};
+    }
+
     public SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants){
         this.moduleNumber = moduleNumber;
         this.angleOffset = moduleConstants.angleOffset;
@@ -43,8 +61,67 @@ public class SwerveModule {
         configDriveMotor();
 
         lastAngle = getState().angle;
+
+        // If we're in Simulation, initialize Falcon motor simulation
+        if (Constants.getRobot() == RobotType.ROBOT_SIMBOT) {
+          simulationInit(); 
+        }
     }
 
+    /** Update input values for Logging and Simulation **/
+    public void updateInputs(SwerveModuleInputs inputs) {
+        inputs.drivePositionRad =
+            Units.rotationsToRadians(mDriveMotor.getSelectedSensorPosition() / 2048) /
+            1.0; // Constants.Swerve.driveGearRatio;        
+        inputs.driveVelocityRadPerSec = 
+            Units.rotationsToRadians(mDriveMotor.getSelectedSensorVelocity() / 2048 * 10) /
+            1.0; // Constants.Swerve.driveGearRatio;
+        inputs.driveAppliedVolts = mDriveMotor.getMotorOutputVoltage();
+        inputs.driveCurrentAmps = new double[] {mDriveMotor.getStatorCurrent()};
+        inputs.driveTempCelcius = new double[] {mDriveMotor.getTemperature()};
+        
+        inputs.turnPositionRad =
+            Units.rotationsToRadians( mAngleMotor.getSelectedSensorPosition() / 2048 ) /
+            Constants.Swerve.angleGearRatio;
+        inputs.turnVelocityRadPerSec = 
+            Units.rotationsToRadians( mAngleMotor.getSelectedSensorVelocity() / 2048 * 10 ) /
+            Constants.Swerve.angleGearRatio;
+        inputs.turnAppliedVolts = mAngleMotor.getMotorOutputVoltage();
+        inputs.turnCurrentAmps = new double[] {mAngleMotor.getStatorCurrent()};
+        inputs.turnTempCelcius = new double[] {mAngleMotor.getTemperature()};
+        
+        if (Constants.getRobot() == RobotType.ROBOT_SIMBOT) {
+            double angleDiffRad = inputs.turnVelocityRadPerSec * 0.02; // / Constants.Swerve.angleGearRatio;
+            turnAbsolutePositionRad += angleDiffRad;
+            while (turnAbsolutePositionRad < 0) {
+                turnAbsolutePositionRad += 2.0 * Math.PI;
+            }
+            while (turnAbsolutePositionRad > 2.0 * Math.PI) {
+                turnAbsolutePositionRad -= 2.0 * Math.PI;
+            }
+
+            // System.out.println("turnVelocity RadsPerSec: " + inputs.turnVelocityRadPerSec);
+            long cancoder_units = Math.round( 4096 * (turnAbsolutePositionRad/(2.0 * Math.PI)) );
+            cancoder_sim.setRawPosition( (int)cancoder_units);
+
+            inputs.turnAbsolutePositionRad = turnAbsolutePositionRad;
+        }
+        else { // This is real, not simulation
+            inputs.turnAbsolutePositionRad =
+                Math.toRadians(Conversions.falconToDegrees(
+                    angleEncoder.getAbsolutePosition(),
+                    Constants.Swerve.angleGearRatio)
+                );
+        }
+        //System.out.println("cancoder: " + angleEncoder.getAbsolutePosition());
+    }
+
+    /** Initialize Falcon motor simulation **/
+    public void simulationInit() {
+		PhysicsSim.getInstance().addTalonFX(mDriveMotor, 0.5, 6800);
+		PhysicsSim.getInstance().addTalonFX(mAngleMotor, 0.5, 6800);
+	}
+	
     public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop){
         /* This is a custom optimize function, since default WPILib optimize assumes continuous controller which CTRE and Rev onboard is not */
         desiredState = CTREModuleState.optimize(desiredState, getState().angle); 
@@ -61,6 +138,7 @@ public class SwerveModule {
             double velocity = Conversions.MPSToFalcon(desiredState.speedMetersPerSecond, Constants.Swerve.wheelCircumference, Constants.Swerve.driveGearRatio);
             mDriveMotor.set(ControlMode.Velocity, velocity, DemandType.ArbitraryFeedForward, feedforward.calculate(desiredState.speedMetersPerSecond));
         }
+        //System.out.println("Out percent: " + mDriveMotor.getMotorOutputPercent());
     }
 
     private void setAngle(SwerveModuleState desiredState){
