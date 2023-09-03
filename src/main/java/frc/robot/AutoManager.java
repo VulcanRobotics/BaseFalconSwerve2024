@@ -16,7 +16,6 @@ import frc.robot.subsystems.PneumaticSubsystem;
 import frc.robot.subsystems.Swerve;
 import frc.robot.commands.*;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,8 +30,6 @@ public class AutoManager {
 
     //List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup("3Piece2", new PathConstraints(1.5, 4));
     List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup("simTest", new PathConstraints(1.5, 4));
-
-
 
     public AutoManager(Swerve swerveDriveSubsystem, ArmSubsystem armSubsystem, PneumaticSubsystem pneumaticSubsystem, IntakeSubsystem intakeSubsystem) {
         eventMap.put("Hello", new PrintCommand("Hello"));
