@@ -72,6 +72,7 @@ public class COTSFalconSwerveConstants {
 
         /** (150 / 7) : 1 */
         double angleGearRatio = (15.4286);
+        //double angleGearRatio = (1.0);
 
         double angleKP = 0.3;
         double angleKI = 0.0;
@@ -111,6 +112,7 @@ public class COTSFalconSwerveConstants {
         public static final double SDSMK4i_L3 = (6.12 / 1.0);
 
         public static final double STINGER = (6.53 / 1.0);
+        //public static final double STINGER = (6.53 / 6.0);
     }
 }
 

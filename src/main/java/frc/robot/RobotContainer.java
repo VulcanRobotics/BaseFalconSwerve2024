@@ -2,6 +2,7 @@ package frc.robot;
 
 import javax.swing.JOptionPane;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -63,6 +64,8 @@ public class RobotContainer {
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+        //System.out.println("Alliance: " + DriverStation.getAlliance() + "...................");
+
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
@@ -152,7 +155,7 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
         //return new exampleAuto(s_Swerve);
-        System.out.println("getAutonomousCommand()......................");
+        //System.out.println("getAutonomousCommand()......................");
         return new SequentialCommandGroup(
             new InstantCommand(()->s_Swerve.zeroGyro()), 
             new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()),

@@ -94,7 +94,7 @@ public class Swerve extends SubsystemBase {
 
     /* Used by SwerveControllerCommand in Auto */
     public void setModuleStates(ChassisSpeeds desiredChassisSpeeds) {
-        System.out.println("Auton: setModuleStates()....... ");
+        // System.out.println("Auton: setModuleStates()....... ");
         SwerveModuleState[] desiredStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(desiredChassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
         
@@ -199,8 +199,8 @@ public class Swerve extends SubsystemBase {
             double simYawChangeDegrees = 360 * simYawChangeRad / (2*Math.PI);
             //System.out.println("Yaw change: " + simYawChangeDegrees);
 
-            // Update the simulated Gyro with the new yaw value
-            simYaw += simYawChangeDegrees;
+            // Update the simulated Gyro with the new yaw value, flipped (minus) for inverted Gyro
+            simYaw -= simYawChangeDegrees;
             if (simYaw > 180.0) {simYaw -= 360.0;}
             if (simYaw < -180.0) {simYaw += 360.0; }
             int dev = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");

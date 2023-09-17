@@ -58,6 +58,7 @@ class TalonFXSimProfile extends SimProfile {
         }
         // Calculate theoretical velocity with some randomness
         double theoreticalVel = outPerc * _fullVel * random(0.95, 1);
+        //double theoreticalVel = outPerc * _fullVel;
         // Simulate motor load
         if (theoreticalVel > _vel + accelAmount) {
             _vel += accelAmount;
@@ -77,10 +78,12 @@ class TalonFXSimProfile extends SimProfile {
         _falcon.getSimCollection().setIntegratedSensorVelocity((int)_vel);
 
         double supplyCurrent = Math.abs(outPerc) * 30 * random(0.95, 1.05);
+        //double supplyCurrent = Math.abs(outPerc) * 30; 
         double statorCurrent = outPerc == 0 ? 0 : supplyCurrent / Math.abs(outPerc);
         _falcon.getSimCollection().setSupplyCurrent(supplyCurrent);
         _falcon.getSimCollection().setStatorCurrent(statorCurrent);
 
         _falcon.getSimCollection().setBusVoltage(12 - outPerc * outPerc * 3/4 * random(0.95, 1.05));
+        //_falcon.getSimCollection().setBusVoltage(12 - outPerc * outPerc * 3/4;
     }
 }
