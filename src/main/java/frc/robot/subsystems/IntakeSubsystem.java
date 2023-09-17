@@ -52,9 +52,9 @@ public class IntakeSubsystem extends SubsystemBase {
     public void spit(double time){
         
         if (startClock == true){
-        startTime = System.currentTimeMillis();
-        startClock = false;
-        elapsedtime = 0.0;
+            startTime = System.currentTimeMillis();
+            startClock = false;
+            elapsedtime = 0.0;
         }
         else {
             elapsedtime = System.currentTimeMillis() - startTime;
@@ -71,23 +71,23 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void keepSpinning(double ktime){
 
-
+        if (haveCubeOnce){
+            kstartClock = true;
+            haveCubeOnce = false;
+        }
         if (kstartClock == true){
             kstartTime = System.currentTimeMillis();
             kstartClock = false;
             kelapsedtime = 0.0;
         }
         else {
-            kelapsedtime = System.currentTimeMillis() - startTime;
+            kelapsedtime = System.currentTimeMillis() - kstartTime;
         }
-    
+        System.out.println(kelapsedtime);
 
         if (kelapsedtime < ktime) { //currently 0.5 seconds
             intakeSpeed = 0.25;
-        } /*else {
-            intakeSpeed = 0.0;
-        }*/
-   
+        } 
     }
 
 
@@ -102,6 +102,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void intake() {
         intakeSpeed = 0.75;
+        if (!haveCube) {
+            haveCubeOnce = true;
+        }
     }
 
     public void spit() {
@@ -125,9 +128,13 @@ public class IntakeSubsystem extends SubsystemBase {
         
         //This finally goes over the conditions and gives the motor power dependent on which is satified
         
+        
+
         if (haveCube) { //If you have the cube, stop the motors
             intakeSpeed = 0.0;
+            
             spit(500);
+            keepSpinning(250);
             //keepSpinning(250);
             m_leftPincerMotor.set(intakeSpeed);
         }
@@ -135,6 +142,7 @@ public class IntakeSubsystem extends SubsystemBase {
             if (intakeSpeed < 0.0) {
                 intakeSpeed = 0.0;
             }
+
             //kstartClock = true;
             m_leftPincerMotor.set(intakeSpeed);
         }

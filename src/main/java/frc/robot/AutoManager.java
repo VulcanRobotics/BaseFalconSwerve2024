@@ -29,7 +29,7 @@ public class AutoManager {
 
 
 
-    List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup("3Piece2", new PathConstraints(1.5, 4));
+    List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup("3Piece2", new PathConstraints(3.5, 4));
 
 
 
@@ -42,7 +42,7 @@ public class AutoManager {
         eventMap.put("MidPlace", new SequentialCommandGroup(new MidPlace(armSubsystem), new InstantCommand(() -> pneumaticSubsystem.toggleClawState())));
         eventMap.put("ToggleIntake", new InstantCommand(() -> pneumaticSubsystem.toggleIntakeState()));
         eventMap.put("Intake", new InstantCommand(() -> intakeSubsystem.intake()));
-        eventMap.put("CubeTransfer", new SequentialCommandGroup(new InstantCommand(() -> pneumaticSubsystem.toggleIntakeState()), new WaitCommand(2), new InstantCommand(() -> intakeSubsystem.spit()), new WaitCommand(0.5), new InstantCommand(() -> pneumaticSubsystem.toggleClawState()) ));
+        eventMap.put("CubeTransfer", new SequentialCommandGroup(new InstantCommand(() -> pneumaticSubsystem.toggleIntakeState()), new WaitCommand(1), new InstantCommand(() -> intakeSubsystem.spit()), new WaitCommand(0.1), new InstantCommand(() -> pneumaticSubsystem.toggleClawState()) ));
         autoBuilder = new SwerveAutoBuilder(
                 swerveDriveSubsystem::getPose,
                 //swerveDriveSubsystem::getPose2,
