@@ -14,6 +14,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.commands.*;
 
 import java.util.ArrayList;
@@ -28,15 +29,17 @@ public class AutoManager {
 
 
 
-    List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup("3Piece2", new PathConstraints(3.5, 4));
+    List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup("test", new PathConstraints(1.0, 4)); //3.5 before open lab
 
 
 
 
-    public AutoManager(Swerve swerveDriveSubsystem, ArmSubsystem armSubsystem, PneumaticSubsystem pneumaticSubsystem, IntakeSubsystem intakeSubsystem) {
+    public AutoManager(Swerve swerveDriveSubsystem, ArmSubsystem armSubsystem, PneumaticSubsystem pneumaticSubsystem, IntakeSubsystem intakeSubsystem, VisionSubsystem visionsubsystem) {
         eventMap.put("Hello", new PrintCommand("Hello"));
         eventMap.put("HighPlace", new SequentialCommandGroup(new HighPlace(armSubsystem), new InstantCommand(() -> pneumaticSubsystem.toggleClawState())));
         eventMap.put("Claw", new InstantCommand(() -> pneumaticSubsystem.toggleClawState()));
+        eventMap.put("QuickLook", new InstantCommand(() -> visionsubsystem.timedFindIt()));
+        eventMap.put("LookMode", new InstantCommand(() -> visionsubsystem.findIt()));
         eventMap.put("OriginPlace", new OriginPlace(armSubsystem));
         eventMap.put("MidPlace", new SequentialCommandGroup(new MidPlace(armSubsystem), new InstantCommand(() -> pneumaticSubsystem.toggleClawState())));
         eventMap.put("ToggleIntake", new InstantCommand(() -> pneumaticSubsystem.toggleIntakeState()));

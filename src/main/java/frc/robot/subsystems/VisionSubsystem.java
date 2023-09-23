@@ -9,6 +9,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Matrix;
 import java.util.Optional;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.lib.vision.LLPoseEstimate;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -44,8 +45,15 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
         ProfiledPIDController visionAdjustPID = new ProfiledPIDController(0.02, 0, 0, new TrapezoidProfile.Constraints(1, 1));
         ProfiledPIDController turnAdjustPID = new ProfiledPIDController(0.03, 0, 0, new TrapezoidProfile.Constraints(1, 1));
 
+        boolean startClock;
+        double startTime;
+        double elapsedtime;
 
         //Botpose value
+
+        public static double XDist = 0.0;
+        public static boolean autoTurn = false;
+        public static boolean kInAuton;
 
         private double translationStdDevCoefficient = 0.3;
         private double rotationStdDevCoefficient = 0.9;
@@ -57,7 +65,27 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
             this.swerveDriveSubsystem = swerve;
             
         }
+        
+        public void timer(double time){
+        
+            
+            if (startClock == true){
+                startTime = System.currentTimeMillis();
+                startClock = false;
+                elapsedtime = 0.0;
+            }
+            else {
+                elapsedtime = System.currentTimeMillis() - startTime;
+            }
+        
     
+            if (elapsedtime < time) { //currently 0.5 seconds
+                autoTurn = true;
+            } else if (elapsedtime < time+1000) {
+                autoTurn = false;
+            }
+       
+        }
 
         //read values periodically
         private Matrix<N3, N1> calculateVisionStdDevs(double distance) {
@@ -102,14 +130,23 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
             }
         }
     
-        public double[] visionAdjustX() {
-
-            double dist = f_tx.getDouble(0.0);
-            return new double[]{visionAdjustPID.calculate(dist, 0), turnAdjustPID.calculate(dist, 0)};
-     
+        public double visionAdjustX() {
+            //System.out.println("NOTICE ME");
+            
+            double dist = f_tx.getInteger(0);
+            return -dist/50;
+            //RobotContainer.seekRotationAxis = (int) dist;
+            //, turnAdjustPID.calculate(dist, 0);
             
         }
 
+        public void timedFindIt() {
+            startClock = true;
+        }
+
+        public void findIt() {
+            autoTurn = !autoTurn;
+        }
 
         @Override
         public void periodic() {
@@ -118,6 +155,10 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
             double latency = Timer.getFPGATimestamp() - (pipelineLatency.getDouble(0.0) + captureLatency.getDouble(0.0))/1000;
             poseEstimate = getEstimate(bluePose, id, latency);
 
+
+            XDist = visionAdjustX();
+            timer(1000);
+            
             SmartDashboard.putNumber("x", bluePose[0]);
             SmartDashboard.putNumber("id", id);
             SmartDashboard.putNumber("latency", latency);

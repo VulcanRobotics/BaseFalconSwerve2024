@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 //import edu.wpi.first.wpilibj.PS4Controller.Button;
 //import edu.wpi.first.wpilibj.XboxController.Axis;
 //import edu.wpi.first.wpilibj.simulation.JoystickSim;
@@ -30,11 +31,14 @@ import frc.robot.AutoManager;
 public class RobotContainer {
     /* Controllers */
     private final CommandXboxController driver = new CommandXboxController(0);
+    private final static XboxController rumble = new XboxController(0);
     private final Joystick operator = new Joystick(1);
     /* Drive Controls */
+    private final int seekRotationAxis = 0;
     private final int translationAxis = XboxController.Axis.kLeftY.value;
     private final int strafeAxis = XboxController.Axis.kLeftX.value;
-    private final int rotationAxis = XboxController.Axis.kRightX.value;
+    private final int rotationAxis = XboxController.Axis.kRightX.value + seekRotationAxis;
+    
 
     //private final float spit = XboxController.Axis.kLeftTrigger.value;
     //private final float intake = XboxController.Axis.kRightTrigger.value;
@@ -58,9 +62,13 @@ public class RobotContainer {
     private final ArmSubsystem s_Arm = new ArmSubsystem(driver.getHID());
     private final PneumaticSubsystem s_Pneumatic = new PneumaticSubsystem();
     private final IntakeSubsystem s_Intake = new IntakeSubsystem();
-    public AutoManager autoManager = new AutoManager(s_Swerve, s_Arm, s_Pneumatic, s_Intake);
+    public AutoManager autoManager = new AutoManager(s_Swerve, s_Arm, s_Pneumatic, s_Intake, s_Vision);
 
     private Boolean isFieldRelative = true;
+
+    public static void controllerRumble(double amount) {
+        rumble.setRumble(RumbleType.kBothRumble, amount);
+    }
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -76,7 +84,7 @@ public class RobotContainer {
                 () -> isFieldRelative
             )
         );
-
+        
         s_Arm.setDefaultCommand(
             new JoystickMovement(s_Arm, operator)
         );
@@ -123,7 +131,8 @@ public class RobotContainer {
         spit.whileTrue(new InstantCommand(() -> s_Intake.spit()));*/
 
         
-        driver.leftTrigger(0.5).onTrue(new InstantCommand(() -> s_Intake.spit()));
+        driver.leftTrigger(0.5).whileTrue(new InstantCommand(() -> s_Intake.forceSpit()));
+        driver.leftBumper().onTrue(new InstantCommand(() -> s_Vision.findIt()));
         driver.rightTrigger(0.5).onTrue(new InstantCommand(() -> s_Intake.intake()));
         driver.rightTrigger(0.5).onFalse(new InstantCommand(() -> s_Intake.holdBall()));
         driver.rightTrigger(0.5).onTrue(new InstantCommand(() -> s_Pneumatic.setIntakeState(true)));

@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -28,6 +29,8 @@ public class TeleopSwerve extends CommandBase {
         this.translationSup = translationSup;
         this.strafeSup = strafeSup;
         this.rotationSup = rotationSup;
+        
+        
         //this.robotCentricSup = robotCentricSup;
         this.fieldCentricSup = fieldCentricSup;
     }
@@ -38,6 +41,14 @@ public class TeleopSwerve extends CommandBase {
         double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
         double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
         double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
+
+        if (VisionSubsystem.autoTurn == true && VisionSubsystem.XDist != 0.0) {
+            RobotContainer.controllerRumble(2.0);
+            rotationVal = VisionSubsystem.XDist;
+        } else {
+            RobotContainer.controllerRumble(0.0);
+            rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
+        }
 
         //System.out.println("trans: " + translationVal);
         //System.out.println("rot: " + rotationVal);

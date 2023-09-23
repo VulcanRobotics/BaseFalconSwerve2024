@@ -40,10 +40,15 @@ public class IntakeSubsystem extends SubsystemBase {
     public boolean spitting = false;
     public boolean startHolding = false;
     private boolean firstPass = true;
+    private boolean forceSpit = false;
 
     private boolean kstartClock = false;
     private double kstartTime = 0.0;
     private double kelapsedtime = 0.0;
+
+    private boolean sstartClock = false;
+    private double sstartTime = 0.0;
+    private double selapsedtime = 0.0;
 
     public boolean getIntakePhotogate() {
         return m_intakePhotogate.get();
@@ -90,7 +95,22 @@ public class IntakeSubsystem extends SubsystemBase {
         } 
     }
 
+    public void forceSpit(double ktime){
 
+        if (sstartClock == true){
+            sstartTime = System.currentTimeMillis();
+            sstartClock = false;
+            selapsedtime = 0.0;
+        }
+        else {
+            selapsedtime = System.currentTimeMillis() - sstartTime;
+        }
+        
+
+        if (selapsedtime < ktime) { //currently 0.5 seconds
+            intakeSpeed = -1.00;
+        } 
+    }
 
     public static boolean getHaveCube() {
         if (haveCube) {
@@ -104,11 +124,16 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeSpeed = 0.75;
         if (!haveCube) {
             haveCubeOnce = true;
+            
         }
     }
 
     public void spit() {
         startClock = true;
+    }
+
+    public void forceSpit() {
+        sstartClock = true;
     }
 
     public void holdBall() {
@@ -136,18 +161,20 @@ public class IntakeSubsystem extends SubsystemBase {
             spit(500);
             keepSpinning(250);
             //keepSpinning(250);
-            m_leftPincerMotor.set(intakeSpeed);
+            
         }
         else {
             if (intakeSpeed < 0.0) {
                 intakeSpeed = 0.0;
             }
-
+            
             //kstartClock = true;
-            m_leftPincerMotor.set(intakeSpeed);
+            
         }
         
+        forceSpit(250);
 
+        m_leftPincerMotor.set(intakeSpeed);
         SmartDashboard.putBoolean("Intake Deployed", PneumaticSubsystem.intakeDeployed);
 
     }
