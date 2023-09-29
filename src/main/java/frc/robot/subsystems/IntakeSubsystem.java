@@ -33,8 +33,8 @@ public class IntakeSubsystem extends SubsystemBase {
     private double holdelapsedtime = 0.0;
 
     private boolean startClock = true;
-    private static boolean haveCube = false;
-    private boolean haveCubeOnce = false;
+    public static boolean haveCube = false;
+    private static boolean haveCubeOnce = false;
     private boolean becreamptuous = false; 
     public static boolean dontBringIn = false;
     public boolean spitting = false;
@@ -120,7 +120,7 @@ public class IntakeSubsystem extends SubsystemBase {
         }
     }
 
-    public void intake() {
+    public static void intake() {
         intakeSpeed = 0.75;
         if (!haveCube) {
             haveCubeOnce = true;

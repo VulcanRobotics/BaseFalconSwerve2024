@@ -19,13 +19,13 @@ public class LightingSubsystem extends SubsystemBase{
 
     public double LEDColor = 0.93; //solid white
     public double DefaultLEDColor = 0.93; //solid white
-    private boolean redLED = false;
-    private boolean blueLED = false;
-    private boolean yellowLED = false;
-    private boolean greenLED = false;
-    private boolean orangeLED = false;
-    private boolean heartbeatLED = false;
-    private boolean purpleLED = false;
+    private static boolean redLED = false;
+    private static boolean blueLED = false;
+    private static boolean yellowLED = false;
+    private static boolean greenLED = false;
+    private static boolean orangeLED = false;
+    private static boolean heartbeatLED = false;
+    private static boolean purpleLED = false;
 
     boolean startClock;
     double startTime;
@@ -33,8 +33,14 @@ public class LightingSubsystem extends SubsystemBase{
     double n;
     boolean flipColor;
 
+    public static boolean kstartClock = true;
+    static double kstartTime;
+    static double kelapsedtime;
+    static double kn;
+    static boolean kflipColor;
+    private static double timeToNextFlash;
 
-    public void setLight(String color) {
+    public static void setLight(String color) {
         if (color == "red") {
             redLED = true;
         } 
@@ -54,7 +60,7 @@ public class LightingSubsystem extends SubsystemBase{
             heartbeatLED = true;
         } 
         if (color == "purple") {
-
+            purpleLED = true;
         }
     }
 
@@ -65,7 +71,7 @@ public class LightingSubsystem extends SubsystemBase{
             startTime = System.currentTimeMillis();
             startClock = false;
             elapsedtime = 0.0;
-            n = 0.0; 
+            n = 1.0; 
         }
         else {
             elapsedtime = System.currentTimeMillis() - startTime;
@@ -83,6 +89,35 @@ public class LightingSubsystem extends SubsystemBase{
                 setLight("blue");
             }
     
+        }
+        
+   
+    }
+
+    public static void flash(){
+        
+            
+        if (kstartClock == true){
+            kstartTime = System.currentTimeMillis();
+            kstartClock = false;
+            kelapsedtime = 0.0;
+            timeToNextFlash = kelapsedtime+200;
+            kn = 1.0; 
+        }
+        else {
+            kelapsedtime = System.currentTimeMillis() - kstartTime;
+        }
+    
+
+        if (kelapsedtime > timeToNextFlash) { //currently 0.5 seconds
+            kflipColor = !kflipColor;
+            timeToNextFlash = kelapsedtime+200;
+        } 
+
+        if (kflipColor) {
+            setLight("yellow");
+        } else {
+            setLight("blue");
         }
         
    
@@ -122,7 +157,9 @@ public class LightingSubsystem extends SubsystemBase{
             LEDColor = DefaultLEDColor;
         }
 
+
         autonFlash();
+
 
         m_light1.set(LEDColor);
         

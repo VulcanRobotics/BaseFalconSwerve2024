@@ -24,6 +24,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
     //oonga boonga robot bullshit
+    //ty krypton for some of this code
     public class VisionSubsystem extends SubsystemBase{
 
         NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-rear");
@@ -55,8 +56,10 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
         public static boolean autoTurn = false;
         public static boolean kInAuton;
 
-        private double translationStdDevCoefficient = 0.3;
+        private double translationStdDevCoefficient = 1.5;
         private double rotationStdDevCoefficient = 0.9;
+
+        public static boolean seeCube = false;
 
         Optional<LLPoseEstimate> poseEstimate  = Optional.empty();
         Swerve swerveDriveSubsystem;
@@ -148,6 +151,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
             autoTurn = !autoTurn;
         }
 
+
         @Override
         public void periodic() {
             double[] bluePose = table.getEntry("botpose_wpiblue").getDoubleArray(new double[6]); 
@@ -155,6 +159,11 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
             double latency = Timer.getFPGATimestamp() - (pipelineLatency.getDouble(0.0) + captureLatency.getDouble(0.0))/1000;
             poseEstimate = getEstimate(bluePose, id, latency);
 
+            if ((f_ta.getDouble(0) > 0.0)) {
+                seeCube = true;
+            } else {
+                seeCube = false;
+            }
 
             XDist = visionAdjustX();
             timer(1000);

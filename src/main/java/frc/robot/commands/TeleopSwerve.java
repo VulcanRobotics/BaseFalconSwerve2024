@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -41,6 +42,10 @@ public class TeleopSwerve extends CommandBase {
         double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
         double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
         double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
+
+        if (VisionSubsystem.seeCube == true && VisionSubsystem.autoTurn == true) {
+            LightingSubsystem.flash();
+        }
 
         if (VisionSubsystem.autoTurn == true && VisionSubsystem.XDist != 0.0) {
             RobotContainer.controllerRumble(2.0);

@@ -25,6 +25,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import frc.robot.Constants;
+import frc.robot.subsystems.LightingSubsystem;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class ArmSubsystem extends SubsystemBase {
@@ -79,6 +80,13 @@ public class ArmSubsystem extends SubsystemBase {
     private double initialWristEncoder = m_encoderWrist.getPosition();
     public final double wristEncoder180 = 47.642;
     XboxController controller;
+
+    public static Joystick extraController = new Joystick(2);
+
+    
+
+
+
 
     public static boolean autoEject = false;
 //*******************************************************//
@@ -281,6 +289,14 @@ public class ArmSubsystem extends SubsystemBase {
     public void periodic(){
 
         
+        if (extraController.getRawButton(3)) {
+            LightingSubsystem.setLight("yellow");
+        } else if (extraController.getRawButton(4)) {
+            LightingSubsystem.setLight("purple");
+        } else {
+
+        }
+
        
 
         if (firstLoop){

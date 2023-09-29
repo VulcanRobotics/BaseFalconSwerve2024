@@ -36,6 +36,8 @@ public class Swerve extends SubsystemBase {
     private double[] lastModulePositionsRad = new double[] {0.0, 0.0, 0.0, 0.0};
     private Translation2d fieldVelocity = new Translation2d();
 
+    public static boolean cubeSeekToggle;
+
     private final SwerveModuleInputsAutoLogged[] swerveModuleInputs =
     new SwerveModuleInputsAutoLogged[] {new SwerveModuleInputsAutoLogged(),
         new SwerveModuleInputsAutoLogged(), new SwerveModuleInputsAutoLogged(),
@@ -66,8 +68,8 @@ public class Swerve extends SubsystemBase {
                                                                  getYaw(),
                                                                   getModulePositions(),
                                                                    getPose(),
-                                                                   VecBuilder.fill(0.2, 0.2, 0.2),
-                                                                   VecBuilder.fill(0.8, 0.8, 0.8));
+                                                                   VecBuilder.fill(0.05, 0.05, 0.05),
+                                                                   VecBuilder.fill(0.9, 0.9, 0.9));
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -86,11 +88,63 @@ public class Swerve extends SubsystemBase {
                                 );
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
 
+
         for(SwerveModule mod : mSwerveMods){
             mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
         }
+        
+        
     }    
 
+
+    public void cubeSeekToggle() {
+        cubeSeekToggle = true;
+    }
+    
+    /*public void cubeSeek() {
+        double translationVal = 0.5;
+        double strafeVal = 0.0;
+        double rotationVal = VisionSubsystem.XDist;
+
+
+        if (VisionSubsystem.seeCube == false || IntakeSubsystem.haveCube == true) {
+            translationVal = 0.0;
+            rotationVal = 0.0;
+        }
+
+        Rotation2d translation = 
+
+        SwerveModuleState[] swerveModuleStates =
+            Constants.Swerve.swerveKinematics.toSwerveModuleStates(
+                fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                                    translation.getX(), 
+                                    translation.getY(), 
+                                    rotation, 
+                                    getYaw()
+                                )
+                                : new ChassisSpeeds(
+                                    translation.getX(), 
+                                    translation.getY(), 
+                                    rotation)
+                                );
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
+
+
+        for(SwerveModule mod : mSwerveMods){
+            mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
+        }
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
+
+
+
+        drive(
+            new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed), 
+            rotationVal * Constants.Swerve.maxAngularVelocity, 
+            //!robotCentricSup.getAsBoolean(), 
+            true, 
+            true
+        );
+    } */
 
     /* Used by SwerveControllerCommand in Auto */
     public void setModuleStates(ChassisSpeeds desiredChassisSpeeds) {
@@ -206,6 +260,10 @@ public class Swerve extends SubsystemBase {
             int dev = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
             SimDouble angle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(dev, "Yaw"));
             angle.set(simYaw);
+        }
+
+        if (cubeSeekToggle == true) {
+            //cubeSeek();
         }
         
         // Update and log Gyro value (whether it's simulated or real)

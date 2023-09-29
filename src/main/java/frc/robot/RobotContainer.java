@@ -62,7 +62,9 @@ public class RobotContainer {
     private final ArmSubsystem s_Arm = new ArmSubsystem(driver.getHID());
     private final PneumaticSubsystem s_Pneumatic = new PneumaticSubsystem();
     private final IntakeSubsystem s_Intake = new IntakeSubsystem();
-    public AutoManager autoManager = new AutoManager(s_Swerve, s_Arm, s_Pneumatic, s_Intake, s_Vision);
+    private final LightingSubsystem s_Light = new LightingSubsystem();
+    //private final RobotContainer s_RobotContainer = new RobotContainer();
+    public AutoManager autoManager = new AutoManager(s_Swerve, s_Arm, s_Pneumatic, s_Intake, s_Vision, s_Light);
 
     private Boolean isFieldRelative = true;
 
@@ -94,6 +96,17 @@ public class RobotContainer {
 
         //s_Arm.setDefaultCommand(new InstantCommand(() -> s_Arm.joystickMovement(operator.getX(), operator.getY(), operator.getZ()), s_Arm));
     }
+
+    /*public void joystickToModuleState() {
+        new CubeSeek(
+            s_Swerve, 
+        () -> -0.2, 
+        () -> -0.0, 
+        () -> -0.0,
+        //() -> driver.back().getAsBoolean(),
+        () -> isFieldRelative);
+    }*/
+
 
     public Swerve getSwerve() {
         if (s_Swerve != null) {
@@ -139,6 +152,7 @@ public class RobotContainer {
         driver.rightTrigger(0.5).onFalse(new InstantCommand(() -> s_Pneumatic.setIntakeState(false)));
         driver.y().onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         driver.start().onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
+        
         
         
         /*if (spit > 0.5){

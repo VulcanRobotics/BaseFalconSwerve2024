@@ -32,12 +32,12 @@ public class PneumaticSubsystem extends SubsystemBase {
 
 
 
-  public void toggleIntakeState(){   // sometimes we want to toggle this 
+  public static void toggleIntakeState(){   // sometimes we want to toggle this 
     intakeDeployed = !intakeDeployed;
     m_intakePullUpSolenoid.set(intakeDeployed);
   }
 
-  public void setIntakeState(boolean state){  // other times like auton we want to force the state
+  public static void setIntakeState(boolean state){  // other times like auton we want to force the state
       intakeDeployed = state;
       m_intakePullUpSolenoid.set(state);             // not needed as the period will enforce, maybe we remove
   }
