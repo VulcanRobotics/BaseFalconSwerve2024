@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
-    import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-    import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.Timer;
@@ -23,10 +23,11 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
-    //oonga boonga robot bullshit
+
     //ty krypton for some of this code
     public class VisionSubsystem extends SubsystemBase{
 
+        //Initiallizes communication to the two limelights from here and sets up a table of values
         NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-rear");
         NetworkTable front = NetworkTableInstance.getDefault().getTable("limelight-front");
 
@@ -69,7 +70,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
             
         }
         
-        public void timer(double time){
+        public void timer(double time){ //This function is used to temporalily take control over rotation of robot for a split moment in order to turn towards cube
         
             
             if (startClock == true){
@@ -82,7 +83,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
             }
         
     
-            if (elapsedtime < time) { //currently 0.5 seconds
+            if (elapsedtime < time) { 
                 autoTurn = true;
             } else if (elapsedtime < time+1000) {
                 autoTurn = false;
@@ -133,21 +134,15 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
             }
         }
     
-        public double visionAdjustX() {
-            //System.out.println("NOTICE ME");
-            
-            double dist = f_tx.getInteger(0);
-            return -dist/50;
-            //RobotContainer.seekRotationAxis = (int) dist;
-            //, turnAdjustPID.calculate(dist, 0);
-            
+        public double visionAdjustX() { //This is the backbone of the autoturn feature, it helps calculate how far the distance the cube is from the center direction (crosshair of the front camera)
+            return -f_tx.getInteger(0)/50;
         }
 
-        public void timedFindIt() {
+        public void timedFindIt() { //This starts the clock on the function "timer()" so that the robot turns towards the cube for a short time
             startClock = true;
         }
 
-        public void findIt() {
+        public void findIt() { //This toggles the turn function permanently until the driver toggles it back off
             autoTurn = !autoTurn;
         }
 
@@ -159,20 +154,20 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
             double latency = Timer.getFPGATimestamp() - (pipelineLatency.getDouble(0.0) + captureLatency.getDouble(0.0))/1000;
             poseEstimate = getEstimate(bluePose, id, latency);
 
-            if ((f_ta.getDouble(0) > 0.0)) {
+            if ((f_ta.getDouble(0) > 0.0)) { //This helps the static variable seeCube get uitilized throughout the classes to help if statements like in the CubeSeek command
                 seeCube = true;
             } else {
                 seeCube = false;
             }
 
             XDist = visionAdjustX();
-            timer(1000);
+            timer(1000); //This doesn't do anything unless the startclock function becomes true
             
             SmartDashboard.putNumber("x", bluePose[0]);
             SmartDashboard.putNumber("id", id);
             SmartDashboard.putNumber("latency", latency);
 
-            if (poseEstimate.isPresent()) {
+            if (poseEstimate.isPresent()) { //If you see an apriltag, try and get an estimated positional prediction relative to the field
                 addVisionEstimate(poseEstimate.get(), id);
             }
 

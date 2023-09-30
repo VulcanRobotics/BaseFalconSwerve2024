@@ -11,14 +11,21 @@ import frc.robot.Constants;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class LightingSubsystem extends SubsystemBase{
+    //Where the Sparkmax light controller is
     private final Spark m_light1 = new Spark(9);
 
+    //Gets alliance name to get the correct alliance color during match
     public static String kAllianceColorName = DriverStation.getAlliance().toString().strip().toLowerCase();
+    
+    //Helps determine which lights should be on during auton
     public static boolean kInAuton = false;
     
 
-    public double LEDColor = 0.93; //solid white
-    public double DefaultLEDColor = 0.93; //solid white
+    public double LEDColor = 0.93; //Currently solid white, but will change throughout match to correspond with action
+
+    public double DefaultLEDColor = 0.93; //Default color will be solid white to indicate whether a color has been assigned yet
+
+    /* List of potential colors that would be used if any of them become true */
     private static boolean redLED = false;
     private static boolean blueLED = false;
     private static boolean yellowLED = false;
@@ -27,20 +34,23 @@ public class LightingSubsystem extends SubsystemBase{
     private static boolean heartbeatLED = false;
     private static boolean purpleLED = false;
 
-    boolean startClock;
+    /* Some clock stuff to add a nice flashing feature during AUTON to help indicate end of auton */
+    static boolean startClock;
     double startTime;
     double elapsedtime;
     double n;
     boolean flipColor;
+    double timeToNextFlash;
 
-    public static boolean kstartClock = true;
-    static double kstartTime;
-    static double kelapsedtime;
-    static double kn;
-    static boolean kflipColor;
-    private static double timeToNextFlash;
 
-    public static void setLight(String color) {
+    /* Some more clock stuff to add a nice flashing feature during TELOP to help indicate if the robot sees a cube during autoTurn*/
+    private static boolean kstartClock = true;
+    private static double kstartTime;
+    private static double kelapsedtime;
+    private static boolean kflipColor;
+    private static double ktimeToNextFlash;
+
+    public static void setLight(String color) { //This is a list of if statements that helps check to see if a certain color is being called for, if so, assign it to the corresponding boolean
         if (color == "red") {
             redLED = true;
         } 
@@ -64,25 +74,30 @@ public class LightingSubsystem extends SubsystemBase{
         }
     }
 
-    public void autonFlash(){
+    public static void startAutonFlash() { //Helps assign the autonflash to the AutoManager
+        startClock = true;
+    }
+
+    public void autonFlash(){ /* Some clock stuff to add a nice flashing feature during AUTON to help indicate end of auton */
         
             
         if (startClock == true){
-            startTime = System.currentTimeMillis();
+            startTime = System.currentTimeMillis(); //All clocks are in Milliseconds
             startClock = false;
             elapsedtime = 0.0;
-            n = 1.0; 
+            timeToNextFlash = elapsedtime+200;
         }
         else {
             elapsedtime = System.currentTimeMillis() - startTime;
         }
     
 
-        if (elapsedtime > (2000*n)+startTime) { //currently 0.5 seconds
+        if (elapsedtime > timeToNextFlash) { 
             flipColor = !flipColor;
-            n = n+1;
+            timeToNextFlash = elapsedtime+200;
         } 
-        if (kInAuton) {
+        
+        if (kInAuton) { //just a safety feature to prevent this from flashing while not in auton
             if (flipColor) {
                 setLight("yellow");
             } else {
@@ -94,24 +109,23 @@ public class LightingSubsystem extends SubsystemBase{
    
     }
 
-    public static void flash(){
+    public static void flash(){  /* Some more clock stuff to add a nice flashing feature during TELOP to help indicate if the robot sees a cube during autoTurn*/
         
             
         if (kstartClock == true){
-            kstartTime = System.currentTimeMillis();
+            kstartTime = System.currentTimeMillis(); //All clocks are in Milliseconds
             kstartClock = false;
             kelapsedtime = 0.0;
-            timeToNextFlash = kelapsedtime+200;
-            kn = 1.0; 
+            ktimeToNextFlash = kelapsedtime+200;
         }
         else {
             kelapsedtime = System.currentTimeMillis() - kstartTime;
         }
     
 
-        if (kelapsedtime > timeToNextFlash) { //currently 0.5 seconds
+        if (kelapsedtime > ktimeToNextFlash) { 
             kflipColor = !kflipColor;
-            timeToNextFlash = kelapsedtime+200;
+            ktimeToNextFlash = kelapsedtime+200;
         } 
 
         if (kflipColor) {
@@ -128,13 +142,15 @@ public class LightingSubsystem extends SubsystemBase{
 
 
         if (kAllianceColorName.startsWith("b")) {
-            DefaultLEDColor = -0.51;
+            DefaultLEDColor = -0.51; //A twinkled blue color
         } else if (kAllianceColorName.startsWith("r")) {
-            DefaultLEDColor = -0.49;
+            DefaultLEDColor = -0.49; //A lava red color
         } else {
-            DefaultLEDColor = 0.93;
+            DefaultLEDColor = 0.93; //White if somehow it can't find the team color
         }
 
+        //NEEDS TO BE OPTIMIZED:
+        /* From the booleans, they set the LEDColor which then get sent to the Spark controller */
         if (yellowLED) {
             LEDColor = 0.67; //solid gold
             yellowLED = false;

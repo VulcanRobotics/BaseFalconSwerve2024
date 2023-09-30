@@ -91,16 +91,20 @@ public class ArmSubsystem extends SubsystemBase {
     public static boolean autoEject = false;
 //*******************************************************//
 
-    public ArmSubsystem(XboxController xbox) {
+    public ArmSubsystem() {
+        // This brake mode for the two motors ensure that the motors will try to maintain it position while pulled down by gravity
         mTower.setNeutralMode(NeutralMode.Brake);
         mElbow.setNeutralMode(NeutralMode.Brake);
-        controller = xbox;
     }
+
      //This function is used everytime we need to automatically move the arm/elbow, uitilizes PID for smooth movement
     private boolean goToPosition(double Tvalue, double Evalue, boolean towerPriority, boolean flipArm) {
+        
+        /* Grabs values from the string potentiometers built on the robot */
         m_stringTower = m_stringPotentiometerTower.get();
         m_stringElbow = m_stringPotentiometerElbow.get();
 
+        /* used the  */
         boolean elbowDone = false;
         boolean towerDone = false;
         SmartDashboard.putBoolean("TOWER DONE", towerPID.atGoal());

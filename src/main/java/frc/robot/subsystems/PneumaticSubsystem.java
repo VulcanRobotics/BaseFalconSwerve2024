@@ -13,7 +13,6 @@ public class PneumaticSubsystem extends SubsystemBase {
   //Stating the solenoids
   private static Solenoid m_clawSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 1);
   private static Solenoid m_intakePullUpSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 2);
-  private static Solenoid m_intakePinchSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 3);
   private static Solenoid m_ejectSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 5);
 
   //Stating the compressor
@@ -42,26 +41,17 @@ public class PneumaticSubsystem extends SubsystemBase {
       m_intakePullUpSolenoid.set(state);             // not needed as the period will enforce, maybe we remove
   }
 
-  public void togglePinchState(){
-    pinchClosed = !pinchClosed;
-    m_intakePinchSolenoid.set(pinchClosed);
-  }
-
-  public void setPinchState(boolean state){    // force it to this state
-    pinchClosed = state;
-    m_intakePinchSolenoid.set(state);
-  }
 
   public void setEjectState(boolean state){    // force it to this state
     m_ejectSolenoid.set(state);
   }
 
-  public void toggleClawState(){
+  public void toggleClawState(){ //Opens for closes claw
     clawClosed = !clawClosed;
     m_clawSolenoid.set(clawClosed);
   }
 
-  public void setClawState(boolean state){
+  public void setClawState(boolean state){ //Sets the claw to a specific state
     clawClosed = state;
     m_clawSolenoid.set(state);
   }

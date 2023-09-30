@@ -158,19 +158,19 @@ public class Swerve extends SubsystemBase {
         }
     }    
 
-    public Pose2d getPose() {
+    public Pose2d getPose() { //This pose takes into account the Swerve Odometry, which is taking the wheel positions to calculate its place on the field
         return swerveOdometry.getPoseMeters();
     }
 
-    public Pose2d getPose2(){
+    public Pose2d getPose2(){ //This pose takes into account the Prediction Odometry, which is taking the camera inputs to calculate its position on the field
         return swerveDrivePoseEstimator.getEstimatedPosition();
     }
 
-    public void resetOdometry(Pose2d pose) {
+    public void resetOdometry(Pose2d pose) { //Resets the wheel odometry, should be paired with the getPose command
         swerveOdometry.resetPosition(getYaw(), getModulePositions(), pose);
     }
 
-    public void resetEstimator(Pose2d pose) {
+    public void resetEstimator(Pose2d pose) { //Resets the Prediction odometry, should be paired with the getPose2 command
         swerveDrivePoseEstimator.resetPosition(getYaw(), getModulePositions(), pose);
     }
 
