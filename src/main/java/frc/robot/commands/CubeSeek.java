@@ -36,16 +36,23 @@ public class CubeSeek extends CommandBase {
     @Override
     public void execute() {
         /* Get Values, Deadband*/
-        double translationVal = 0.2; //Slowly move forward
+        double translationVal = 0.5; //Slowly move forward
         double strafeVal = 0.0;
         double rotationVal = VisionSubsystem.XDist;
 
         
-        IntakeSubsystem.intake(); //Begin to intake - Do we need this?
+        
 
-        if (Math.abs(rotationVal) <= 0.05) {
+        /*if (!VisionSubsystem.seeCube) {
+            rotationVal = 0.0;
+            translationVal = 0.0;
+        }*/
+
+        if (VisionSubsystem.aSize >= 0.5) {
             PneumaticSubsystem.setIntakeState(true);
-        }
+            IntakeSubsystem.intake(); //Begin to intake - Do we need this?
+            translationVal = 0.5;
+        } 
 
         if (IntakeSubsystem.haveCube == true) { //VisionSubsystem.seeCube == false || 
             translationVal = 0.0;

@@ -45,7 +45,7 @@ public class RobotContainer {
     private final JoystickButton originPlace = new JoystickButton(operator, 2);
     private final JoystickButton claw = new JoystickButton(operator, 1);
     /* Subsystems */
-    private final Swerve s_Swerve = new Swerve();
+    public final Swerve s_Swerve = new Swerve();
     private final VisionSubsystem s_Vision = new VisionSubsystem(s_Swerve);
     private final ArmSubsystem s_Arm = new ArmSubsystem();
     private final PneumaticSubsystem s_Pneumatic = new PneumaticSubsystem();
@@ -101,7 +101,7 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         driver.leftTrigger(0.5).whileTrue(new InstantCommand(() -> s_Intake.forceSpit()));
-        driver.leftBumper().onTrue(new InstantCommand(() -> s_Vision.findIt()));
+        driver.leftBumper().onTrue(new CubeSeek(s_Swerve));
         driver.rightTrigger(0.5).onTrue(new InstantCommand(() -> s_Intake.intake()));
         driver.rightTrigger(0.5).onFalse(new InstantCommand(() -> s_Intake.holdBall()));
         driver.rightTrigger(0.5).onTrue(new InstantCommand(() -> s_Pneumatic.setIntakeState(true)));
@@ -134,6 +134,7 @@ public class RobotContainer {
         // An ExampleCommand will run in autonomous
         //return new exampleAuto(s_Swerve);
         //System.out.println("getAutonomousCommand()......................");
+        
         return new SequentialCommandGroup(
             new InstantCommand(()->s_Swerve.zeroGyro()), 
             new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()),

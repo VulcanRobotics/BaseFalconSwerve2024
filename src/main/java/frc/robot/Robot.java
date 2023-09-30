@@ -16,6 +16,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.Swerve;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
@@ -111,6 +112,9 @@ public class Robot extends LoggedRobot {
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     VisionSubsystem.kInAuton = true;
+    m_robotContainer.s_Swerve.resetModulesToAbsolute();
+    m_robotContainer.s_Swerve.zeroGyro();
+    
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();

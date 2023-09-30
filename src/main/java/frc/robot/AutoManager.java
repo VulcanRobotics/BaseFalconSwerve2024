@@ -70,14 +70,14 @@ public class AutoManager {
         
     }
     
-    public Command getAuton() { //This last command bundles everything together into one sequential command group that is followed by the robot throughout the mission
-        //return autoBuilder.fullAuto(path);
-        return new SequentialCommandGroup(
+    public Command getAuton() {
+        return autoBuilder.fullAuto(path);
+        /*return new SequentialCommandGroup(
             new FollowPathWithEvents(autoBuilder.fullAuto(path.get(0)), path.get(0).getMarkers(), eventMap),
-            new WaitCommand(1.0),
-            eventMap.get("LookMode"),
-            new WaitCommand(1.0),
+            //new WaitCommand(1.0),
+            //eventMap.get("LookMode"),
+            //new WaitCommand(1.0),
             new FollowPathWithEvents(autoBuilder.fullAuto(path.get(1)), path.get(1).getMarkers(), eventMap)
-        );
+        );*/
     } 
 }

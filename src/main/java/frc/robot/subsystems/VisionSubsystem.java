@@ -54,6 +54,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
         //Botpose value
 
         public static double XDist = 0.0;
+        public static double aSize = 0.0;
         public static boolean autoTurn = false;
         public static boolean kInAuton;
 
@@ -135,7 +136,16 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
         }
     
         public double visionAdjustX() { //This is the backbone of the autoturn feature, it helps calculate how far the distance the cube is from the center direction (crosshair of the front camera)
-            return -f_tx.getInteger(0)/50;
+            double dist = f_tx.getInteger(0);
+            return -dist/50;
+        }
+
+        public double getTargetSize() {
+            return aSize;
+        }
+
+        public double getTargetDist() {
+            return XDist;
         }
 
         public void timedFindIt() { //This starts the clock on the function "timer()" so that the robot turns towards the cube for a short time
@@ -149,6 +159,10 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
         @Override
         public void periodic() {
+
+            aSize = f_ta.getDouble(-1.0);
+            XDist = f_tx.getDouble(0.0);
+
             double[] bluePose = table.getEntry("botpose_wpiblue").getDoubleArray(new double[6]); 
             double id = table.getEntry("tid").getDouble(0);
             double latency = Timer.getFPGATimestamp() - (pipelineLatency.getDouble(0.0) + captureLatency.getDouble(0.0))/1000;
