@@ -118,7 +118,7 @@ public class ArmSubsystem extends SubsystemBase {
                 if (m_stringElbow < Evalue + 0.01 && m_stringElbow > Evalue - 0.01){
                     elbowDone = true;
                 } else{
-                    mElbowSpeed = elbowPID.calculate(m_stringElbow,Evalue);
+                    mElbowSpeed = -elbowPID.calculate(m_stringElbow,Evalue);
                 }
 
             } else {
@@ -137,7 +137,7 @@ public class ArmSubsystem extends SubsystemBase {
                 }
 
                 mTowerSpeed = -towerPID.calculate(m_stringTower,Tvalue);
-                mElbowSpeed = elbowPID.calculate(m_stringElbow,Evalue);
+                mElbowSpeed = -elbowPID.calculate(m_stringElbow,Evalue);
 
             } else{
                 if (m_stringTower < Tvalue + 0.01 && m_stringTower > Tvalue - 0.01){ 
@@ -157,7 +157,7 @@ public class ArmSubsystem extends SubsystemBase {
                 elbowDone = true;
             }
 
-            mElbowSpeed = elbowPID.calculate(m_stringElbow,Evalue);
+            mElbowSpeed = -elbowPID.calculate(m_stringElbow,Evalue);
         }
 
         if (towerDone && elbowDone){
@@ -183,7 +183,7 @@ public class ArmSubsystem extends SubsystemBase {
             return true;
         } 
         return false;*/
-        return goToPosition(.52, .8, false, true);
+        return goToPosition(.512, .244, false, true);
     }
     public boolean midPlace(){
         return goToPosition(.37, .71, false, false);
@@ -204,9 +204,9 @@ public class ArmSubsystem extends SubsystemBase {
 
     public  boolean Origin(boolean Setup){ //the setup condition is used initially if we want the arm to be within the frame perimeter
         if (Setup){
-            return goToPosition(0.39, 0.662, false, false);
+            return goToPosition(0.39, 0.372, false, false);
         } else {
-            return goToPosition(0.362, 0.661, false, false);
+            return goToPosition(0.38, 0.372, false, false);
         }
     }
 

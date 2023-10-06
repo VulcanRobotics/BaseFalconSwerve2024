@@ -12,6 +12,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 
@@ -48,6 +49,10 @@ public class JoystickMovement extends CommandBase {
         if (!arePositionsSet()) {
             armSubsystem.joystickMovement(operator.getX(), -operator.getY(), operator.getZ());
         }
+
+        SmartDashboard.putNumber("X Arm", operator.getX());
+        SmartDashboard.putNumber("Y Arm", operator.getY());
+        SmartDashboard.putNumber("Z Arm", operator.getZ());
     }
 
 

@@ -29,7 +29,7 @@ public class AutoManager {
 
 
 
-    List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup("test", new PathConstraints(1.0, 4)); //3.5 before open lab
+    List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup("test", new PathConstraints(3.0, 4)); //3.5 before open lab
 
 
 
@@ -50,16 +50,17 @@ public class AutoManager {
         eventMap.put("MidPlace", new SequentialCommandGroup(new MidPlace(armSubsystem), new InstantCommand(() -> pneumaticSubsystem.toggleClawState())));
         eventMap.put("ToggleIntake", new InstantCommand(() -> pneumaticSubsystem.toggleIntakeState()));
         eventMap.put("Intake", new InstantCommand(() -> intakeSubsystem.intake()));
+        eventMap.put("Spit", new InstantCommand(() -> intakeSubsystem.forceSpit()));
         eventMap.put("CubeSeek", new CubeSeek(swerveDriveSubsystem));
-        eventMap.put("CubeTransfer", new SequentialCommandGroup(new InstantCommand(() -> pneumaticSubsystem.toggleIntakeState()), new WaitCommand(1), new InstantCommand(() -> intakeSubsystem.spit()), new WaitCommand(0.1), new InstantCommand(() -> pneumaticSubsystem.toggleClawState()) ));
+        eventMap.put("CubeTransfer", new SequentialCommandGroup(new InstantCommand(() -> intakeSubsystem.spit()), new WaitCommand(0.1), new InstantCommand(() -> pneumaticSubsystem.toggleClawState()) ));
         autoBuilder = new SwerveAutoBuilder(
                 
                 /*This code below are the final (and most important parts) of the auton, the swerve drive assignment!
                   The general orientation and relative positioning are here*/
-                swerveDriveSubsystem::getPose, //This pose takes into account the Swerve Odometry, which is taking the wheel positions to calculate its place on the field
-                //swerveDriveSubsystem::getPose2, //This pose takes into account the Prediction Odometry, which is taking the camera inputs to calculate its position on the field
-                swerveDriveSubsystem::resetOdometry, //Resets the wheel odometry, should be paired with the getPose command
-                //swerveDriveSubsystem::resetEstimator, //Resets the Prediction odometry, should be paired with the getPose2 command
+                //swerveDriveSubsystem::getPose, //This pose takes into account the Swerve Odometry, which is taking the wheel positions to calculate its place on the field
+                swerveDriveSubsystem::getPose2, //This pose takes into account the Prediction Odometry, which is taking the camera inputs to calculate its position on the field
+                //swerveDriveSubsystem::resetOdometry, //Resets the wheel odometry, should be paired with the getPose command
+                swerveDriveSubsystem::resetEstimator, //Resets the Prediction odometry, should be paired with the getPose2 command
                 new PIDConstants(5.6, 0.0, 0.001),
                 new PIDConstants(4.3, 0.0, 0.001),
                 swerveDriveSubsystem::setModuleStates,

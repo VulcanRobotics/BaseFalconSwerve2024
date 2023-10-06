@@ -40,7 +40,6 @@ public class HighPlace extends CommandBase {
 
         if (armSubsystem.highPlace()){
             armSubsystem.isCommandRunning = false;
-            System.out.println("GGGGGGGGGGGGGGGGGG");
         }
 
         return armSubsystem.highPlace();

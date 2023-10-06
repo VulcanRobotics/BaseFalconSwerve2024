@@ -2,6 +2,9 @@ package frc.robot;
 
 import javax.swing.JOptionPane;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -107,6 +110,12 @@ public class RobotContainer {
         driver.rightTrigger(0.5).onTrue(new InstantCommand(() -> s_Pneumatic.setIntakeState(true)));
         driver.rightTrigger(0.5).onFalse(new InstantCommand(() -> s_Pneumatic.setIntakeState(false)));
         driver.y().onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+        
+        //driver.x().whileTrue(new DriveToPosition(s_Swerve, new Pose2d(1.65, 4.41, new Rotation2d(0.0))));
+        driver.x().whileTrue(new SequentialCommandGroup(
+            new DriveToPosition(s_Swerve, new Pose2d(1.65, 4.41, new Rotation2d(0.0))),
+             new HighPlace(s_Arm),
+             new InstantCommand(() -> s_Pneumatic.toggleClawState())));
         driver.start().onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
 
         /* Operator Buttons */
