@@ -41,8 +41,8 @@ public class ArmSubsystem extends SubsystemBase {
     private static AnalogPotentiometer m_stringPotentiometerElbow = new AnalogPotentiometer(new AnalogInput(1));
     private static AnalogPotentiometer m_PotentiometerWrist = new AnalogPotentiometer(new AnalogInput(2));
     //stating the PID controllers
-    private static ProfiledPIDController towerPID = new ProfiledPIDController(10,0.2, 0, new TrapezoidProfile.Constraints(1, 1));
-    private static ProfiledPIDController elbowPID = new ProfiledPIDController(10, 0.2, 0, new TrapezoidProfile.Constraints(1, 1));
+    private static ProfiledPIDController towerPID = new ProfiledPIDController(10,0.0, 0.1, new TrapezoidProfile.Constraints(1, 1));
+    private static ProfiledPIDController elbowPID = new ProfiledPIDController(10, 0.0, 0.1, new TrapezoidProfile.Constraints(1, 1));
     //stating the Talon 500 motors for the tower
     private static TalonFX mTower = new TalonFX(13, "roborio");
     private static TalonFX mElbow = new TalonFX(12, "roborio");
@@ -126,7 +126,7 @@ public class ArmSubsystem extends SubsystemBase {
             }
             
         }else if (flipArm){ //The elbow only starts moving if the arm is past the halfway point (reaching behind)
-            if (m_stringTower > 0.5){
+            if (m_stringTower > 0.43){
 
                 if (m_stringTower < Tvalue + 0.01 && m_stringTower > Tvalue - 0.01){ //towerDone = towerPID.atSetpoint()
                     towerDone = true;
@@ -183,7 +183,7 @@ public class ArmSubsystem extends SubsystemBase {
             return true;
         } 
         return false;*/
-        return goToPosition(.512, .244, false, true);
+        return goToPosition(.512, .230, false, true);
     }
     public boolean midPlace(){
         return goToPosition(.37, .71, false, false);
@@ -202,11 +202,11 @@ public class ArmSubsystem extends SubsystemBase {
         return goToPosition(0.27, 0.911, false, false);
     }
 
-    public  boolean Origin(boolean Setup){ //the setup condition is used initially if we want the arm to be within the frame perimeter
-        if (Setup){
-            return goToPosition(0.39, 0.372, false, false);
+    public  boolean Origin(boolean cube){ //the setup condition is used initially if we want the arm to be within the frame perimeter
+        if (!cube){
+            return goToPosition(0.395, 0.372, false, false);
         } else {
-            return goToPosition(0.38, 0.372, false, false);
+            return goToPosition(0.375, 0.372, false, false);
         }
     }
 

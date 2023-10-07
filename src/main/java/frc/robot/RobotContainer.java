@@ -121,7 +121,7 @@ public class RobotContainer {
         /* Operator Buttons */
         highPlace.whileTrue(new HighPlace(s_Arm));
         midPlace.whileTrue(new MidPlace(s_Arm));
-        originPlace.whileTrue(new OriginPlace(s_Arm));
+        originPlace.whileTrue(new OriginPlace(s_Arm, false));
         claw.onTrue(new InstantCommand(() -> s_Pneumatic.toggleClawState()));
 
 

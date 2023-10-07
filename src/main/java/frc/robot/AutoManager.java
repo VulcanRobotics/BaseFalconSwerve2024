@@ -29,7 +29,7 @@ public class AutoManager {
 
 
 
-    List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup("test", new PathConstraints(3.0, 4)); //3.5 before open lab
+    List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup("3PieceLow", new PathConstraints(3.0, 4)); //3.5 before open lab
 
 
 
@@ -46,13 +46,13 @@ public class AutoManager {
         eventMap.put("Claw", new InstantCommand(() -> pneumaticSubsystem.toggleClawState()));
         eventMap.put("QuickLook", new InstantCommand(() -> visionsubsystem.timedFindIt()));
         eventMap.put("LookMode", new InstantCommand(() -> visionsubsystem.findIt()));
-        eventMap.put("OriginPlace", new OriginPlace(armSubsystem));
+        eventMap.put("ReturnOrigin", new OriginPlace(armSubsystem, false));
         eventMap.put("MidPlace", new SequentialCommandGroup(new MidPlace(armSubsystem), new InstantCommand(() -> pneumaticSubsystem.toggleClawState())));
         eventMap.put("ToggleIntake", new InstantCommand(() -> pneumaticSubsystem.toggleIntakeState()));
         eventMap.put("Intake", new InstantCommand(() -> intakeSubsystem.intake()));
         eventMap.put("Spit", new InstantCommand(() -> intakeSubsystem.forceSpit()));
         eventMap.put("CubeSeek", new CubeSeek(swerveDriveSubsystem));
-        eventMap.put("CubeTransfer", new SequentialCommandGroup(new InstantCommand(() -> intakeSubsystem.spit()), new WaitCommand(0.1), new InstantCommand(() -> pneumaticSubsystem.toggleClawState()) ));
+        eventMap.put("CubeTransfer", new SequentialCommandGroup(new OriginPlace(armSubsystem, true), new InstantCommand(() -> intakeSubsystem.spit()), new WaitCommand(0.1), new InstantCommand(() -> pneumaticSubsystem.toggleClawState() )));
         autoBuilder = new SwerveAutoBuilder(
                 
                 /*This code below are the final (and most important parts) of the auton, the swerve drive assignment!
