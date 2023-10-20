@@ -69,7 +69,7 @@ public class Swerve extends SubsystemBase {
                                                                   getModulePositions(),
                                                                    getPose(),
                                                                    VecBuilder.fill(0.05, 0.05, 0.05),
-                                                                   VecBuilder.fill(0.9, 0.9, 0.9));
+                                                                   VecBuilder.fill(0.8, 0.8, 0.8));
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {

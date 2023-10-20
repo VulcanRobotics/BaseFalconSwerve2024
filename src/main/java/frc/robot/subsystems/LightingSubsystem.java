@@ -1,16 +1,13 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import java.util.concurrent.CancellationException;
-
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
-import frc.robot.Constants;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class LightingSubsystem extends SubsystemBase{
+
     //Where the Sparkmax light controller is
     private final Spark m_light1 = new Spark(9);
 
@@ -42,7 +39,7 @@ public class LightingSubsystem extends SubsystemBase{
     boolean flipColor;
     double timeToNextFlash;
 
-
+    String currentColor = "Red";
     /* Some more clock stuff to add a nice flashing feature during TELOP to help indicate if the robot sees a cube during autoTurn*/
     private static boolean kstartClock = true;
     private static double kstartTime;
@@ -50,27 +47,11 @@ public class LightingSubsystem extends SubsystemBase{
     private static boolean kflipColor;
     private static double ktimeToNextFlash;
 
-    public static void setLight(String color) { //This is a list of if statements that helps check to see if a certain color is being called for, if so, assign it to the corresponding boolean
-        if (color == "red") {
-            redLED = true;
-        } 
-        if (color == "blue") {
-            blueLED = true;
-        } 
-        if (color == "yellow") {
-            yellowLED = true;
-        } 
-        if (color == "green") {
-            greenLED = true;
-        } 
-        if (color == "orange") {
-            orangeLED = true;
-        } 
-        if (color == "heartbeat") {
-            heartbeatLED = true;
-        } 
-        if (color == "purple") {
-            purpleLED = true;
+    public void toggleLight() { //This is a list of if statements that helps check to see if a certain color is being called for, if so, assign it to the corresponding boolean
+        if (currentColor == "Purple") {
+            currentColor = "Yellow";
+        } else {
+            currentColor = "Purple";
         }
     }
 
@@ -80,7 +61,7 @@ public class LightingSubsystem extends SubsystemBase{
 
     public void autonFlash(){ /* Some clock stuff to add a nice flashing feature during AUTON to help indicate end of auton */
         
-            
+        /*    
         if (startClock == true){
             startTime = System.currentTimeMillis(); //All clocks are in Milliseconds
             startClock = false;
@@ -104,7 +85,7 @@ public class LightingSubsystem extends SubsystemBase{
                 setLight("blue");
             }
     
-        }
+        }*/
         
    
     }
@@ -129,9 +110,9 @@ public class LightingSubsystem extends SubsystemBase{
         } 
 
         if (kflipColor) {
-            setLight("yellow");
+            //setLight("yellow");
         } else {
-            setLight("blue");
+            //setLight("blue");
         }
         
    
@@ -141,7 +122,7 @@ public class LightingSubsystem extends SubsystemBase{
     public void periodic() {
 
 
-        if (kAllianceColorName.startsWith("b")) {
+        /*if (kAllianceColorName.startsWith("b")) {
             DefaultLEDColor = -0.51; //A twinkled blue color
         } else if (kAllianceColorName.startsWith("r")) {
             DefaultLEDColor = -0.49; //A lava red color
@@ -151,7 +132,7 @@ public class LightingSubsystem extends SubsystemBase{
 
         //NEEDS TO BE OPTIMIZED:
         /* From the booleans, they set the LEDColor which then get sent to the Spark controller */
-        if (yellowLED) {
+       /* if (yellowLED) {
             LEDColor = 0.67; //solid gold
             yellowLED = false;
         } else if (purpleLED) {
@@ -173,13 +154,26 @@ public class LightingSubsystem extends SubsystemBase{
             LEDColor = DefaultLEDColor;
         }
 
+        
 
         autonFlash();
 
 
-        m_light1.set(LEDColor);
-        
+        m_light1.set(LEDColor);*/
 
+        switch(currentColor) {
+            case "Red":
+                m_light1.set(-0.25);
+                break;
+            case "Yellow":
+                m_light1.set(0.67);
+                break;
+            case "Purple":
+                m_light1.set(0.91);
+                break;
+            default: 
+                break;
+        }
     }
 
     

@@ -30,7 +30,7 @@ public class CubeSeek extends CommandBase {
 
     @Override
     public void initialize(){
-        
+        VisionSubsystem.setFrontLimeLight(false);
     }
 
     @Override
@@ -87,6 +87,7 @@ public class CubeSeek extends CommandBase {
                 fieldCentric, 
                 true
             );
+            VisionSubsystem.setFrontLimeLight(true);
         }
         return IntakeSubsystem.haveCube;
     }

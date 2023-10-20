@@ -178,18 +178,13 @@ public class ArmSubsystem extends SubsystemBase {
     //these are the multiple position functions used to move the two arms. They are all functions in order to uitilize a name rather than a number to ask for a position
 //*******************************************************//
     public boolean highPlace(){
-  
-        /*if ((m_stringTower < .522 + 0.015 && m_stringTower > .522 - 0.015) && (m_stringElbow < .801 + 0.03 && m_stringElbow > .801 - 0.03)) {
-            return true;
-        } 
-        return false;*/
         return goToPosition(.512, .230, false, true);
     }
     public boolean midPlace(){
-        return goToPosition(.37, .71, false, false);
+        return goToPosition(.353, .259, false, false);
     }
     public boolean humanPlayerGrab(){
-        return goToPosition(.368, .755, false, false);
+        return goToPosition(.395, .3087, false, false);
     }
     public boolean humanPlayerGrabDrop(){
         return goToPosition(.377, .701, false, false);
@@ -291,18 +286,6 @@ public class ArmSubsystem extends SubsystemBase {
     
     @Override
     public void periodic(){
-
-        
-        if (extraController.getRawButton(3)) {
-            LightingSubsystem.setLight("yellow");
-        } else if (extraController.getRawButton(4)) {
-            LightingSubsystem.setLight("purple");
-        } else {
-
-        }
-
-       
-
         if (firstLoop){
             firstLoop = false;
 

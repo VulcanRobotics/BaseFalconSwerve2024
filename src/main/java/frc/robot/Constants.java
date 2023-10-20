@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.kauailabs.navx.IMUProtocol.YPRUpdate;
 
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.util.Alert;
@@ -14,6 +15,7 @@ import edu.wpi.first.math.util.Units;
 import frc.lib.util.COTSFalconSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import java.util.List;
 import java.util.Map;
@@ -75,6 +77,26 @@ public final class Constants {
 
         public static final double fieldLength = Units.inchesToMeters(651.25);
         public static final double fieldWidth = Units.inchesToMeters(315.5);
+        private static final double xReference = 0.0;
+        private static final double yReference = 0.0;
+        private static final double yDelta = 0.66;
+        private static final Rotation2d rot0 = new Rotation2d(Units.degreesToRadians(0.0));
+        private static final Rotation2d rot180 = new Rotation2d(Units.degreesToRadians(180.0));
+
+        public static final Pose2d PlacementPositions[][] = {
+          {new Pose2d(xReference, yReference, rot0), new Pose2d(xReference, yReference, rot180)},
+          {new Pose2d(xReference, yReference + yDelta, rot0), new Pose2d(xReference, yReference + yDelta, rot180)},
+          {new Pose2d(xReference, yReference + 2*yDelta, rot0), new Pose2d(xReference, yReference + 2*yDelta, rot180)},
+          {new Pose2d(xReference, yReference + 3*yDelta, rot0), new Pose2d(xReference, yReference + 3*yDelta, rot180)},
+          {new Pose2d(xReference, yReference + 4*yDelta, rot0), new Pose2d(xReference, yReference + 4*yDelta, rot180)},
+          {new Pose2d(xReference, yReference + 5*yDelta, rot0), new Pose2d(xReference, yReference + 5*yDelta, rot180)},
+          {new Pose2d(xReference, yReference + 6*yDelta, rot0), new Pose2d(xReference, yReference + 6*yDelta, rot180)},
+          {new Pose2d(xReference, yReference + 7*yDelta, rot0), new Pose2d(xReference, yReference + 7*yDelta, rot180)},
+          {new Pose2d(xReference, yReference + 8*yDelta, rot0), new Pose2d(xReference, yReference + 8*yDelta, rot180)}
+        };
+
+
+        
         
         public static final List<AprilTag> aprilTags = List.of(
                 new AprilTag(
@@ -208,7 +230,7 @@ public final class Constants {
         /** Meters per Second */
         public static final double maxSpeed = 4.5; //TODO: This must be tuned to specific robot
         /** Radians per Second */
-        public static final double maxAngularVelocity = 10.0; //TODO: This must be tuned to specific robot
+        public static final double maxAngularVelocity = 15.0; //TODO: This must be tuned to specific robot
 
         /* Neutral Modes */
         public static final NeutralMode angleNeutralMode = NeutralMode.Coast;

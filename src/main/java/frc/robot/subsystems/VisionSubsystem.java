@@ -31,7 +31,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
         NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-rear");
         NetworkTable front = NetworkTableInstance.getDefault().getTable("limelight-front");
 
-
+        
         //stating the data given from the tables that the limelightes write on
         NetworkTableEntry f_tx = front.getEntry("tx");
         NetworkTableEntry f_ty = front.getEntry("ty");
@@ -43,6 +43,10 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
         NetworkTableEntry doesTargetExist = table.getEntry("tv"); 
         NetworkTableEntry pipelineLatency = table.getEntry("tl");
         NetworkTableEntry captureLatency = table.getEntry("cl");
+
+        NetworkTableEntry doesTargetExistFront = front.getEntry("tv"); 
+        NetworkTableEntry pipelineLatencyFront = front.getEntry("tl");
+        NetworkTableEntry captureLatencyFront = front.getEntry("cl");
 
         ProfiledPIDController visionAdjustPID = new ProfiledPIDController(0.02, 0, 0, new TrapezoidProfile.Constraints(1, 1));
         ProfiledPIDController turnAdjustPID = new ProfiledPIDController(0.03, 0, 0, new TrapezoidProfile.Constraints(1, 1));
@@ -63,16 +67,28 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
         public static boolean seeCube = false;
 
+        Optional<LLPoseEstimate> poseEstimateFront  = Optional.empty();
+
         Optional<LLPoseEstimate> poseEstimate  = Optional.empty();
         Swerve swerveDriveSubsystem;
 
         public VisionSubsystem(Swerve swerve) {
             this.swerveDriveSubsystem = swerve;
-            
         }
         
+        public static void setFrontLimeLight(boolean seekAprilTags) {
+            if (seekAprilTags) {
+                NetworkTableInstance.getDefault().getTable("limelight-front").getEntry("pipeline").setNumber(1);
+            } else {
+                NetworkTableInstance.getDefault().getTable("limelight-front").getEntry("pipeline").setNumber(0);
+            }
+
+            
+        }
+
+
         public void timer(double time){ //This function is used to temporalily take control over rotation of robot for a split moment in order to turn towards cube
-        
+            
             
             if (startClock == true){
                 startTime = System.currentTimeMillis();
@@ -134,6 +150,19 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
             }
             }
         }
+
+        private void addVisionEstimateFront(LLPoseEstimate estimate, double id){
+            if (id != -1) {
+            var aprilTagPoseFront =
+                Constants.FieldConstants.APRIL_TAG_FIELD_LAYOUT.getTagPose((int) id);
+            if (aprilTagPoseFront.isPresent()) {
+            double distanceFromPrimaryTagFront =
+                aprilTagPoseFront.get().getTranslation().getDistance(estimate.estimatedPose.getTranslation());
+            swerveDriveSubsystem.swerveDrivePoseEstimator.addVisionMeasurement(
+                estimate.estimatedPose.toPose2d(), estimate.timestampSeconds, calculateVisionStdDevs(distanceFromPrimaryTagFront));
+            }
+            }
+        }
     
         public double visionAdjustX() { //This is the backbone of the autoturn feature, it helps calculate how far the distance the cube is from the center direction (crosshair of the front camera)
             double dist = f_tx.getInteger(0);
@@ -154,6 +183,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
         public void findIt() { //This toggles the turn function permanently until the driver toggles it back off
             autoTurn = !autoTurn;
+            
         }
 
 
@@ -168,13 +198,24 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
             double latency = Timer.getFPGATimestamp() - (pipelineLatency.getDouble(0.0) + captureLatency.getDouble(0.0))/1000;
             poseEstimate = getEstimate(bluePose, id, latency);
 
+            double[] bluePoseFront = front.getEntry("botpose_wpiblue").getDoubleArray(new double[6]); 
+            double idFront = front.getEntry("tid").getDouble(0);
+            double latencyFront = Timer.getFPGATimestamp() - (pipelineLatencyFront.getDouble(0.0) + captureLatencyFront.getDouble(0.0))/1000;
+            poseEstimateFront = getEstimate(bluePoseFront, idFront, latencyFront);
+
             if ((f_ta.getDouble(0) > 0.0)) { //This helps the static variable seeCube get uitilized throughout the classes to help if statements like in the CubeSeek command
                 seeCube = true;
             } else {
                 seeCube = false;
             }
 
-            XDist = visionAdjustX();
+            if (autoTurn && kInAuton == false) {
+                VisionSubsystem.setFrontLimeLight(false);
+            } else {
+                VisionSubsystem.setFrontLimeLight(true);
+            }
+
+            XDist = visionAdjustX()*0.5;
             timer(1000); //This doesn't do anything unless the startclock function becomes true
             
             SmartDashboard.putNumber("x", bluePose[0]);
@@ -183,6 +224,8 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
             if (poseEstimate.isPresent()) { //If you see an apriltag, try and get an estimated positional prediction relative to the field
                 addVisionEstimate(poseEstimate.get(), id);
+            } else if (poseEstimateFront.isPresent()) {
+                addVisionEstimateFront(poseEstimateFront.get(), idFront);
             }
 
 

@@ -43,9 +43,9 @@ public class TeleopSwerve extends CommandBase {
         double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
         double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
 
-        if (VisionSubsystem.seeCube == true && VisionSubsystem.autoTurn == true) {
+        /*if (VisionSubsystem.seeCube == true && VisionSubsystem.autoTurn == true) {
             LightingSubsystem.flash();
-        }
+        }*/
 
         if (VisionSubsystem.autoTurn == true && VisionSubsystem.XDist != 0.0) {
             RobotContainer.controllerRumble(2.0);

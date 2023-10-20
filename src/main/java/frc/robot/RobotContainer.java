@@ -44,9 +44,12 @@ public class RobotContainer {
     /* Operator Buttons */
     private final JoystickButton robotCentric = new JoystickButton(driver.getHID(), XboxController.Button.kBack.value);
     private final JoystickButton highPlace = new JoystickButton(operator, 5);
-    private final JoystickButton midPlace = new JoystickButton(operator, 4);
+    private final JoystickButton midPlace = new JoystickButton(operator, 3);
     private final JoystickButton originPlace = new JoystickButton(operator, 2);
+    private final JoystickButton humanPlayerGrab = new JoystickButton(operator, 4);
     private final JoystickButton claw = new JoystickButton(operator, 1);
+    private final JoystickButton toggleLight = new JoystickButton(operator, 9);
+    
     /* Subsystems */
     public final Swerve s_Swerve = new Swerve();
     private final VisionSubsystem s_Vision = new VisionSubsystem(s_Swerve);
@@ -104,25 +107,23 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         driver.leftTrigger(0.5).whileTrue(new InstantCommand(() -> s_Intake.forceSpit()));
-        driver.leftBumper().onTrue(new CubeSeek(s_Swerve));
+        driver.leftBumper().onTrue(new InstantCommand(() -> s_Vision.findIt()));
         driver.rightTrigger(0.5).onTrue(new InstantCommand(() -> s_Intake.intake()));
         driver.rightTrigger(0.5).onFalse(new InstantCommand(() -> s_Intake.holdBall()));
         driver.rightTrigger(0.5).onTrue(new InstantCommand(() -> s_Pneumatic.setIntakeState(true)));
         driver.rightTrigger(0.5).onFalse(new InstantCommand(() -> s_Pneumatic.setIntakeState(false)));
         driver.y().onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
-        
-        //driver.x().whileTrue(new DriveToPosition(s_Swerve, new Pose2d(1.65, 4.41, new Rotation2d(0.0))));
-        driver.x().whileTrue(new SequentialCommandGroup(
-            new DriveToPosition(s_Swerve, new Pose2d(1.65, 4.41, new Rotation2d(0.0))),
-             new HighPlace(s_Arm),
-             new InstantCommand(() -> s_Pneumatic.toggleClawState())));
+        driver.x().whileTrue(new DriveToPosition(s_Swerve, new Pose2d(1.65, 4.41, new Rotation2d(0.0))));
         driver.start().onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
 
         /* Operator Buttons */
         highPlace.whileTrue(new HighPlace(s_Arm));
         midPlace.whileTrue(new MidPlace(s_Arm));
         originPlace.whileTrue(new OriginPlace(s_Arm, false));
+        humanPlayerGrab.whileTrue(new HumanPlayerGrab(s_Arm));
+
         claw.onTrue(new InstantCommand(() -> s_Pneumatic.toggleClawState()));
+        toggleLight.onTrue(new InstantCommand(() -> s_Light.toggleLight()));
 
 
         // Switch between field-relative and robot-centric driving

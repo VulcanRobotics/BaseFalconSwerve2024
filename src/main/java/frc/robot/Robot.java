@@ -47,6 +47,8 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit() {
 
+
+
     Logger logger = Logger.getInstance();
     setUseTiming(Constants.getMode() != Constants.Mode.REPLAY);
     logger.recordMetadata("Robot", Constants.getRobot().toString());
@@ -133,6 +135,8 @@ public class Robot extends LoggedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
+
+    VisionSubsystem.setFrontLimeLight(true);
     VisionSubsystem.kInAuton = false;
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();

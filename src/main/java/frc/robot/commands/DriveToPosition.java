@@ -17,8 +17,8 @@ import frc.robot.subsystems.Swerve;
 
 public class DriveToPosition extends CommandBase {
     
-    private final double AnglePIDValues[] = {3.0, 0.0, 0.1};
-    private final double DrivePIDValues[] = {1.8, 0.0, 0.0};
+    private final double AnglePIDValues[] = {4.0, 0.0, 0.2};
+    private final double DrivePIDValues[] = {2.0, 0.0, 0.1};
 
     private PIDController xController = new PIDController(DrivePIDValues[0], DrivePIDValues[1], DrivePIDValues[2]);
     private PIDController yController = new PIDController(DrivePIDValues[0], DrivePIDValues[1], DrivePIDValues[2]);
@@ -44,8 +44,8 @@ public class DriveToPosition extends CommandBase {
         xController.reset();
         yController.reset();
 
-        xController.setTolerance(Units.inchesToMeters(3));
-        yController.setTolerance(Units.inchesToMeters(1));
+        xController.setTolerance(Units.inchesToMeters(2.0));
+        yController.setTolerance(Units.inchesToMeters(0.5));
 
         atX = atY = atTheta = false;
     }
@@ -82,7 +82,7 @@ public class DriveToPosition extends CommandBase {
 
         }
 
-        swerveDriveSubsystem.drive(new Translation2d(xSpeed, ySpeed), thetaSpeed, false, false);
+        swerveDriveSubsystem.drive(new Translation2d(xSpeed, ySpeed), thetaSpeed, true, false);
     }
         
     @Override
