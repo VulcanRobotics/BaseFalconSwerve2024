@@ -39,7 +39,7 @@ public class LightingSubsystem extends SubsystemBase{
     boolean flipColor;
     double timeToNextFlash;
 
-    String currentColor = "Red";
+    String currentColor = kAllianceColorName.startsWith("b") ? "Blue" : "Red";
     /* Some more clock stuff to add a nice flashing feature during TELOP to help indicate if the robot sees a cube during autoTurn*/
     private static boolean kstartClock = true;
     private static double kstartTime;
@@ -171,6 +171,8 @@ public class LightingSubsystem extends SubsystemBase{
             case "Purple":
                 m_light1.set(0.91);
                 break;
+            case "Blue":
+                m_light1.set(-0.51);
             default: 
                 break;
         }

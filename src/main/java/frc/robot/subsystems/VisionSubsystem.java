@@ -18,7 +18,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-
+import edu.wpi.first.wpilibj.DriverStation;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -56,6 +56,8 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
         double elapsedtime;
 
         //Botpose value
+        public String kAllianceColorName = DriverStation.getAlliance().toString().strip().toLowerCase();
+
 
         public static double XDist = 0.0;
         public static double aSize = 0.0;
@@ -194,14 +196,17 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
             XDist = f_tx.getDouble(0.0);
 
             double[] bluePose = table.getEntry("botpose_wpiblue").getDoubleArray(new double[6]); 
+            double[] redPose = table.getEntry("botpose_wpired").getDoubleArray(new double[6]); 
+
             double id = table.getEntry("tid").getDouble(0);
             double latency = Timer.getFPGATimestamp() - (pipelineLatency.getDouble(0.0) + captureLatency.getDouble(0.0))/1000;
-            poseEstimate = getEstimate(bluePose, id, latency);
+            poseEstimate = (kAllianceColorName.startsWith("b")) ? getEstimate(bluePose, id, latency) : getEstimate(redPose, id, latency);
 
             double[] bluePoseFront = front.getEntry("botpose_wpiblue").getDoubleArray(new double[6]); 
+            double[] redPoseFront = front.getEntry("botpose_wpired").getDoubleArray(new double[6]); 
             double idFront = front.getEntry("tid").getDouble(0);
             double latencyFront = Timer.getFPGATimestamp() - (pipelineLatencyFront.getDouble(0.0) + captureLatencyFront.getDouble(0.0))/1000;
-            poseEstimateFront = getEstimate(bluePoseFront, idFront, latencyFront);
+            poseEstimateFront = (kAllianceColorName.startsWith("b")) ? getEstimate(bluePoseFront, idFront, latencyFront) : getEstimate(redPoseFront, idFront, latencyFront);
 
             if ((f_ta.getDouble(0) > 0.0)) { //This helps the static variable seeCube get uitilized throughout the classes to help if statements like in the CubeSeek command
                 seeCube = true;
@@ -209,11 +214,11 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
                 seeCube = false;
             }
 
-            if (autoTurn && kInAuton == false) {
+            /*if (autoTurn && kInAuton == false) {
                 VisionSubsystem.setFrontLimeLight(false);
             } else {
                 VisionSubsystem.setFrontLimeLight(true);
-            }
+            }*/
 
             XDist = visionAdjustX()*0.5;
             timer(1000); //This doesn't do anything unless the startclock function becomes true

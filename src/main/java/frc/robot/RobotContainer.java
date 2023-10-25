@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj.PS4Controller.Button;
 //import edu.wpi.first.wpilibj.XboxController.Axis;
 //import edu.wpi.first.wpilibj.simulation.JoystickSim;
@@ -35,6 +36,7 @@ public class RobotContainer {
     /* Controllers */
     private final CommandXboxController driver = new CommandXboxController(0);
     private final static XboxController rumble = new XboxController(0);
+    private final static CommandXboxController extraXbox = new CommandXboxController(2);
     private final Joystick operator = new Joystick(1);
     /* Drive Controls */
     private final int seekRotationAxis = 0;
@@ -116,6 +118,38 @@ public class RobotContainer {
         driver.x().whileTrue(new DriveToPosition(s_Swerve, new Pose2d(1.65, 4.41, new Rotation2d(0.0))));
         driver.start().onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
 
+        extraXbox.povRight().onTrue(new SequentialCommandGroup( new InstantCommand(() -> AutoManager.autonNumber++), new InstantCommand(() -> AutoManager.checkAutonChange()) ) {
+            @Override
+            public boolean runsWhenDisabled() {
+                return true; 
+            }
+        });
+    
+
+        extraXbox.povLeft().onTrue(new SequentialCommandGroup( new InstantCommand(() -> AutoManager.autonNumber--), new InstantCommand(() -> AutoManager.checkAutonChange()) ) {
+            @Override
+            public boolean runsWhenDisabled() {
+                return true; 
+            }
+        });
+
+
+        extraXbox.povUp().onTrue(new SequentialCommandGroup( new InstantCommand(() -> AutoManager.speed = AutoManager.speed + 0.1), new InstantCommand(() -> SmartDashboard.putNumber("AutonSpeed", AutoManager.speed))){
+            @Override
+            public boolean runsWhenDisabled() {
+                return true; 
+            }
+        });
+
+
+        extraXbox.povDown().onTrue(new SequentialCommandGroup( new InstantCommand(() -> AutoManager.speed = AutoManager.speed - 0.1), new InstantCommand(() -> SmartDashboard.putNumber("AutonSpeed", AutoManager.speed))){
+            @Override
+            public boolean runsWhenDisabled() {
+                return true; 
+            }
+        });
+
+
         /* Operator Buttons */
         highPlace.whileTrue(new HighPlace(s_Arm));
         midPlace.whileTrue(new MidPlace(s_Arm));
@@ -134,6 +168,7 @@ public class RobotContainer {
         
 
     }
+
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.

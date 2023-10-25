@@ -7,6 +7,7 @@ import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.ArmSubsystem;
@@ -20,21 +21,42 @@ import frc.robot.commands.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
  
 public class AutoManager {
     SwerveAutoBuilder autoBuilder;
 
     HashMap<String, Command> eventMap = new HashMap<>();
 
+    public static double speed = 3.0;
+    public static ArrayList<String> autonNameList = new ArrayList<String>();
+    public static int autonNumber = 0;
+    public static int autonNumberLimit = 0;
 
 
-    List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup("3PieceLow", new PathConstraints(3.0, 4)); //3.5 before open lab
-
-
+    
 
 
     public AutoManager(Swerve swerveDriveSubsystem, ArmSubsystem armSubsystem, PneumaticSubsystem pneumaticSubsystem, IntakeSubsystem intakeSubsystem, VisionSubsystem visionsubsystem, LightingSubsystem lightingSubsystem) {
+        // NO AUTONS SELECTED//
+        autonNameList.add("None");
+        
+        //ALL AUTONS ON NON-BUMP SIDE//
+        autonNameList.add("2Piece NoBumpSide");
+        autonNameList.add("3Piece NoBumpSide");
+        autonNameList.add("3Piece NoBumpSide Low");
+
+        //ALL AUTONS ON BUMP SIDE//
+        autonNameList.add("Bump Community");
+        autonNameList.add("BLANK");
+        autonNameList.add("BLANK");
+        
+        //ALL AUTONS ON BALANCE//
+        autonNameList.add("2PieceAndBalance");
+        autonNameList.add("BLANK");
+        autonNameList.add("BLANK");
+
+        autonNumberLimit = autonNameList.size();
+
         
         /* ALL COMMANDS FOR PATHPLANNER AUTON. The eventMaps below each assign a commmand a specific word for the PathPlanner software to recognize
             new SequentialCommandGroup: this trait for a command sets up multiple instances of commands and runs them one by one, each one waiting for the command to finish before going to the next one
@@ -70,8 +92,22 @@ public class AutoManager {
 
         
     }
+
+    
+    
+    public static void checkAutonChange() {
+        if (autonNumber <= 0) {
+            autonNumber = 0;
+        } else if (autonNumber >= 9) {
+            autonNumber = 9;
+        }
+        SmartDashboard.putString("AutonSelected", autonNameList.get(autonNumber));
+        SmartDashboard.putNumber("AutonSIZE", autonNumberLimit);
+        SmartDashboard.putNumber("Auton#", autonNumber);
+    }
     
     public Command getAuton() {
+        List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup(autonNameList.get(autonNumber), new PathConstraints(speed, 3.0)); //3.5 before open lab
         return autoBuilder.fullAuto(path);
         /*return new SequentialCommandGroup(
             new FollowPathWithEvents(autoBuilder.fullAuto(path.get(0)), path.get(0).getMarkers(), eventMap),

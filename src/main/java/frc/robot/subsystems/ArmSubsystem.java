@@ -32,8 +32,8 @@ public class ArmSubsystem extends SubsystemBase {
 
     public boolean isCommandRunning = false;
     //stating the proximity switches
-    static DigitalInput m_towerUpProximity = new DigitalInput(2);
     DigitalInput m_towerDownProximity = new DigitalInput(3);
+    static DigitalInput m_towerUpProximity = new DigitalInput(2);
     DigitalInput m_ElbowDownProximity = new DigitalInput(8);
     static DigitalInput m_ElbowUpProximity = new DigitalInput(7);
     //stating the string potentiometers

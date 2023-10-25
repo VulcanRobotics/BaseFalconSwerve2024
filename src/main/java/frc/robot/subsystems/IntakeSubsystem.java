@@ -157,7 +157,7 @@ public class IntakeSubsystem extends SubsystemBase {
         
         //This finally goes over the conditions and gives the motor power dependent on which is satified
         if (haveCube) { //If you have the cube, ensure the cube is held tight and stop the motors
-            intakeSpeed = 0.0;
+            intakeSpeed = 0.02;
             
             spit(500);
             keepSpinning(250);
