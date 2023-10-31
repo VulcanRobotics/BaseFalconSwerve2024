@@ -221,7 +221,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
             }*/
 
             XDist = visionAdjustX()*0.5;
-            timer(1000); //This doesn't do anything unless the startclock function becomes true
+            //timer(1000); //This doesn't do anything unless the startclock function becomes true
             
             SmartDashboard.putNumber("x", bluePose[0]);
             SmartDashboard.putNumber("id", id);

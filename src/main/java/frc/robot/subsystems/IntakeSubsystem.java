@@ -97,7 +97,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
         if (kelapsedtime < ktime) { //currently 0.5 seconds
             intakeSpeed = 0.25;
-        } 
+        } else {
+            intakeSpeed = 0.02;
+        }
     }
 
     public void forceSpit(double ktime){ // This overrides most intake speed changes as it comes last before going to the motor, its enabled from the driver to forcefully spit the cube out for a split second during TELEOP
@@ -157,7 +159,7 @@ public class IntakeSubsystem extends SubsystemBase {
         
         //This finally goes over the conditions and gives the motor power dependent on which is satified
         if (haveCube) { //If you have the cube, ensure the cube is held tight and stop the motors
-            intakeSpeed = 0.02;
+            
             
             spit(500);
             keepSpinning(250);

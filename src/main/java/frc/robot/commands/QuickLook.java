@@ -16,12 +16,12 @@ import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 
-public class CubeSeek extends CommandBase {    
+public class QuickLook extends CommandBase {    
     private Swerve s_Swerve;    
     private final boolean fieldCentric = false;
 
     //public TeleopSwerve(Swerve s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup, BooleanSupplier robotCentricSup) {
-    public CubeSeek(Swerve s_Swerve) {        
+    public QuickLook(Swerve s_Swerve) {        
         this.s_Swerve = s_Swerve;
         addRequirements(s_Swerve);
 
@@ -36,7 +36,7 @@ public class CubeSeek extends CommandBase {
     @Override
     public void execute() {
         /* Get Values, Deadband*/
-        double translationVal = 0.5; //Slowly move forward
+        double translationVal = 0.0; //Slowly move forward
         double strafeVal = 0.0;
         double rotationVal = VisionSubsystem.XDist;
         double rotationKp = 0.8;
@@ -49,17 +49,7 @@ public class CubeSeek extends CommandBase {
             translationVal = 0.0;
         }*/
 
-        if (VisionSubsystem.aSize >= 0.5) {
-            PneumaticSubsystem.setIntakeState(true);
-            IntakeSubsystem.intake(); //Begin to intake - Do we need this?
-            translationVal = 0.5;
-        } 
-
-        if (IntakeSubsystem.haveCube == true) { //VisionSubsystem.seeCube == false || 
-            translationVal = 0.0;
-            rotationVal = 0.0;
-        }
-
+        
 
         /* Drive */
         s_Swerve.drive(
@@ -74,21 +64,10 @@ public class CubeSeek extends CommandBase {
 
     @Override
     public boolean isFinished(){
-        if (IntakeSubsystem.haveCube) {
-            double translationVal = 0.0;
-            double strafeVal = 0.0;
-            double rotationVal = 0.0;
-            PneumaticSubsystem.setIntakeState(false);
-            /* Drive */
-            s_Swerve.drive(
-                new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed), 
-                rotationVal * Constants.Swerve.maxAngularVelocity, 
-                //!robotCentricSup.getAsBoolean(), 
-                fieldCentric, 
-                true
-            );
-            //VisionSubsystem.setFrontLimeLight(true);
+        if (Math.abs(VisionSubsystem.XDist) < 0.01) {
+            return true;
+        } else {
+            return false;
         }
-        return IntakeSubsystem.haveCube;
     }
 }

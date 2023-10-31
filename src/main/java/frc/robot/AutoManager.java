@@ -66,7 +66,7 @@ public class AutoManager {
         eventMap.put("Hello", new PrintCommand("Hello")); //This is the basic structure of how eventMaps should go
         eventMap.put("HighPlace", new SequentialCommandGroup(new HighPlace(armSubsystem), new InstantCommand(() -> pneumaticSubsystem.toggleClawState())));
         eventMap.put("Claw", new InstantCommand(() -> pneumaticSubsystem.toggleClawState()));
-        eventMap.put("QuickLook", new InstantCommand(() -> visionsubsystem.timedFindIt()));
+        eventMap.put("QuickLook", new QuickLook(swerveDriveSubsystem));
         eventMap.put("LookMode", new InstantCommand(() -> visionsubsystem.findIt()));
         eventMap.put("ReturnOrigin", new OriginPlace(armSubsystem, false));
         eventMap.put("MidPlace", new SequentialCommandGroup(new MidPlace(armSubsystem), new InstantCommand(() -> pneumaticSubsystem.toggleClawState())));
@@ -74,6 +74,7 @@ public class AutoManager {
         eventMap.put("Intake", new InstantCommand(() -> intakeSubsystem.intake()));
         eventMap.put("Spit", new InstantCommand(() -> intakeSubsystem.forceSpit()));
         eventMap.put("CubeSeek", new CubeSeek(swerveDriveSubsystem));
+        eventMap.put("Balance", new Balance(swerveDriveSubsystem));
         eventMap.put("CubeTransfer", new SequentialCommandGroup(new OriginPlace(armSubsystem, true), new InstantCommand(() -> intakeSubsystem.spit()), new WaitCommand(0.1), new InstantCommand(() -> pneumaticSubsystem.toggleClawState() )));
         autoBuilder = new SwerveAutoBuilder(
                 

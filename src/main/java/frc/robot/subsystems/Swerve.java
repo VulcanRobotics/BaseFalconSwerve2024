@@ -210,6 +210,8 @@ public class Swerve extends SubsystemBase {
     /** New method for Swerve(), necessary for Logging and Simulation with AdvantageKit **/
     public void periodic(){
 
+        SmartDashboard.putNumber("GYRO ROLL", m_gyro.getRoll());
+
         if (Constants.getRobot() == RobotType.ROBOT_SIMBOT) {
             // If we're in simulaton, run the next iteration of physics simulation for the Falcon motors
             PhysicsSim.getInstance().run();

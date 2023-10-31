@@ -144,7 +144,7 @@ public class Robot extends LoggedRobot {
     // continue until interrupted by another command, remove
     // this line or comment it out.
 
-    VisionSubsystem.setFrontLimeLight(true);
+    //VisionSubsystem.setFrontLimeLight(true);
     VisionSubsystem.kInAuton = false;
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();

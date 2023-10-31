@@ -26,50 +26,25 @@
     },
     {
       "anchorPoint": {
-        "x": 6.804378818827082,
-        "y": 4.779077986975419
+        "x": 5.2409073550786,
+        "y": 5.025352866677956
       },
       "prevControl": {
-        "x": 6.803159050101259,
-        "y": 4.780101494463379
+        "x": 5.239687586352777,
+        "y": 5.026376374165916
       },
       "nextControl": {
-        "x": 6.803159050101259,
-        "y": 4.780101494463379
+        "x": 5.239687586352777,
+        "y": 5.026376374165916
       },
       "holonomicAngle": -25.19746184536629,
-      "isReversal": true,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 1.8530765811531622,
-        "y": 5.046750425098073
-      },
-      "prevControl": {
-        "x": 2.8983096177997894,
-        "y": 4.8087098361696725
-      },
-      "nextControl": {
-        "x": 2.8983096177997894,
-        "y": 4.8087098361696725
-      },
-      "holonomicAngle": -179.18834374472473,
       "isReversal": true,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": true,
       "stopEvent": {
         "names": [
-          "Spit"
+          "CubeSeek"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -78,19 +53,74 @@
     },
     {
       "anchorPoint": {
-        "x": 6.829661570781475,
-        "y": 3.6652451898653795
+        "x": 1.8032069328027545,
+        "y": 5.060493572376034
       },
       "prevControl": {
-        "x": 6.721687983306523,
-        "y": 5.0191481546157535
+        "x": 2.848439969449383,
+        "y": 4.822452983447634
       },
       "nextControl": {
-        "x": 6.721687983306523,
-        "y": 5.0191481546157535
+        "x": 2.848439969449383,
+        "y": 4.822452983447634
       },
-      "holonomicAngle": -47.88808609778708,
+      "holonomicAngle": -179.18834374472473,
       "isReversal": true,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": true,
+      "stopEvent": {
+        "names": [
+          "Spit",
+          "ToggleIntake"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 5.228555918917394,
+        "y": 4.231439662532103
+      },
+      "prevControl": {
+        "x": 4.445254512036802,
+        "y": 5.283283326983321
+      },
+      "nextControl": {
+        "x": 4.445254512036802,
+        "y": 5.283283326983321
+      },
+      "holonomicAngle": -33.20965389076467,
+      "isReversal": true,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": true,
+      "stopEvent": {
+        "names": [
+          "CubeSeek"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 2.4277372964468156,
+        "y": 4.432889846682471
+      },
+      "prevControl": {
+        "x": 2.5991545624534758,
+        "y": 4.4309363735655865
+      },
+      "nextControl": {
+        "x": 2.3056146459515143,
+        "y": 4.434281557799227
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
@@ -103,12 +133,12 @@
     },
     {
       "anchorPoint": {
-        "x": 1.8843320933169645,
-        "y": 4.367827351974149
+        "x": 1.7876081707024527,
+        "y": 4.431846063344905
       },
       "prevControl": {
-        "x": 3.783553863982727,
-        "y": 5.362900800454378
+        "x": 2.0033233937995654,
+        "y": 4.444603415248497
       },
       "nextControl": null,
       "holonomicAngle": 179.66593832992504,
@@ -137,12 +167,6 @@
       ]
     },
     {
-      "position": 3.2475852272727277,
-      "names": [
-        "ToggleIntake"
-      ]
-    },
-    {
       "position": 0.2650568181818184,
       "names": [
         "ToggleIntake",
@@ -158,7 +182,13 @@
       ]
     },
     {
-      "position": 1.2120738636363637,
+      "position": 1.7857954545454542,
+      "names": [
+        "ToggleIntake"
+      ]
+    },
+    {
+      "position": 3.891335227272728,
       "names": [
         "ToggleIntake"
       ]

@@ -42,7 +42,7 @@ public class ArmSubsystem extends SubsystemBase {
     private static AnalogPotentiometer m_PotentiometerWrist = new AnalogPotentiometer(new AnalogInput(2));
     //stating the PID controllers
     private static ProfiledPIDController towerPID = new ProfiledPIDController(10,0.0, 0.1, new TrapezoidProfile.Constraints(1, 1));
-    private static ProfiledPIDController elbowPID = new ProfiledPIDController(10, 0.0, 0.1, new TrapezoidProfile.Constraints(1, 1));
+    private static ProfiledPIDController elbowPID = new ProfiledPIDController(20, 0.0, 0.1, new TrapezoidProfile.Constraints(1, 1));
     //stating the Talon 500 motors for the tower
     private static TalonFX mTower = new TalonFX(13, "roborio");
     private static TalonFX mElbow = new TalonFX(12, "roborio");
@@ -199,9 +199,9 @@ public class ArmSubsystem extends SubsystemBase {
 
     public  boolean Origin(boolean cube){ //the setup condition is used initially if we want the arm to be within the frame perimeter
         if (!cube){
-            return goToPosition(0.395, 0.372, false, false);
+            return goToPosition(0.37, 0.375, false, false);
         } else {
-            return goToPosition(0.375, 0.372, false, false);
+            return goToPosition(0.375, 0.375, false, false);
         }
     }
 
