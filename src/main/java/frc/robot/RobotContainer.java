@@ -109,6 +109,7 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         driver.leftTrigger(0.5).whileTrue(new InstantCommand(() -> s_Intake.forceSpit()));
+        driver.povDown().onTrue(new InstantCommand(() -> s_Intake.slowForceSpit()));
         driver.leftBumper().onTrue(new InstantCommand(() -> s_Vision.findIt()));
         driver.rightTrigger(0.5).onTrue(new InstantCommand(() -> s_Intake.intake()));
         driver.rightTrigger(0.5).onFalse(new InstantCommand(() -> s_Intake.holdBall()));
@@ -117,7 +118,7 @@ public class RobotContainer {
         driver.y().onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         driver.x().whileTrue(new DriveToPosition(s_Swerve, new Pose2d(1.65, 4.41, new Rotation2d(0.0))));
         driver.start().onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
-
+            
         extraXbox.povRight().onTrue(new SequentialCommandGroup( new InstantCommand(() -> AutoManager.autonNumber++), new InstantCommand(() -> AutoManager.checkAutonChange()) ) {
             @Override
             public boolean runsWhenDisabled() {

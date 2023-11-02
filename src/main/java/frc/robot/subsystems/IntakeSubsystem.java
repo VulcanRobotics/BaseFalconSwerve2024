@@ -54,6 +54,12 @@ public class IntakeSubsystem extends SubsystemBase {
     private boolean sstartClock = false;
     private double sstartTime = 0.0;
     private double selapsedtime = 0.0;
+    // For the "slowForceSpit" function
+    private boolean rstartClock = false;
+    private double rstartTime = 0.0;
+    private double relapsedtime = 0.0;
+
+
 
     public boolean getIntakePhotogate() { // this helps get the status on whether or not the intake has a cube or not
         return m_intakePhotogate.get();
@@ -100,7 +106,14 @@ public class IntakeSubsystem extends SubsystemBase {
         } else {
             intakeSpeed = 0.02;
         }
-    }
+    //     if (relapsedtime < ktime) {
+    //         intakeSpeed = 0.25;
+    //     } else {
+    //         intakeSpeed = 0.02;
+    //     }
+        }
+       
+    
 
     public void forceSpit(double ktime){ // This overrides most intake speed changes as it comes last before going to the motor, its enabled from the driver to forcefully spit the cube out for a split second during TELEOP
 
@@ -118,6 +131,23 @@ public class IntakeSubsystem extends SubsystemBase {
             intakeSpeed = -1.00;
         } 
     }
+
+    public void slowForceSpit(double rtime){
+
+        if (rstartClock == true){
+            rstartTime = System.currentTimeMillis();
+            rstartClock = false;
+            relapsedtime = 0.0;
+        }
+        else {
+            relapsedtime = System.currentTimeMillis() - rstartTime;
+        }
+
+        if (relapsedtime < rtime){
+            intakeSpeed = -0.08; //may need to change
+        }
+    }
+
 
     public static boolean getHaveCube() { // Used for outside commands/if statements to see if it has a cube or not. Not rly for this class specifically
         if (haveCube) {
@@ -142,6 +172,9 @@ public class IntakeSubsystem extends SubsystemBase {
     }
     public void forceSpit() {
         sstartClock = true;
+    }
+    public void slowForceSpit(){
+        rstartClock = true;
     }
     public void holdBall() {
         intakeSpeed = 0.0;
@@ -173,6 +206,7 @@ public class IntakeSubsystem extends SubsystemBase {
         }
         
         forceSpit(250); // If the driver needs the cube out, this makes it happen.
+        slowForceSpit(3000);
 
         m_intakeMotor.set(intakeSpeed); //Finally, sets it to the intake motor
 
@@ -191,4 +225,5 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
 } 
+
 

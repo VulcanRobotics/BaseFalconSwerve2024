@@ -31,7 +31,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Swerve extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
-    public SwerveDrivePoseEstimator swerveDrivePoseEstimator;
+    public static SwerveDrivePoseEstimator swerveDrivePoseEstimator;
     public SwerveModule[] mSwerveMods;
     private double[] lastModulePositionsRad = new double[] {0.0, 0.0, 0.0, 0.0};
     private Translation2d fieldVelocity = new Translation2d();

@@ -11,14 +11,16 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public class CubeSeek extends CommandBase {    
     private Swerve s_Swerve;    
     private final boolean fieldCentric = false;
+    private static ProfiledPIDController translationPID = new ProfiledPIDController(3, 0.0, 0, new TrapezoidProfile.Constraints(0.5, 1));
 
     //public TeleopSwerve(Swerve s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup, BooleanSupplier robotCentricSup) {
     public CubeSeek(Swerve s_Swerve) {        
@@ -36,7 +38,7 @@ public class CubeSeek extends CommandBase {
     @Override
     public void execute() {
         /* Get Values, Deadband*/
-        double translationVal = 0.5; //Slowly move forward
+        double translationVal = translationPID.calculate(Swerve.swerveDrivePoseEstimator.getEstimatedPosition().getX(), 7.5); //Slowly move forward
         double strafeVal = 0.0;
         double rotationVal = VisionSubsystem.XDist;
         double rotationKp = 0.8;
