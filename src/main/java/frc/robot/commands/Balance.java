@@ -20,7 +20,7 @@ public class Balance extends CommandBase {
     private Swerve s_Swerve;    
     private final boolean fieldCentric = false;
     private double rotationVal = 0.0;
-    private double balanceScale = 150;
+    private double balanceScale = 135;
 
     private double changeThreshold = 0.85;
 
@@ -35,25 +35,23 @@ public class Balance extends CommandBase {
     public Balance(Swerve s_Swerve) {        
         this.s_Swerve = s_Swerve;
         addRequirements(s_Swerve);
-
-
     }
 
 
     @Override
     public void execute() {
         /* Get Values, Deadband*/
-        double translationVal = 0.0;//-s_Swerve.m_gyro.getRoll()/balanceScale; //Slowly move forward
+        double translationVal = -s_Swerve.m_gyro.getRoll()/balanceScale; //Slowly move forward
         double strafeVal = 0.0;
         rotationVal = 0.0;
 
-        if (!done) {
+        /*if (!done) {
             if (onRamp) {
                 if (Math.abs(-s_Swerve.m_gyro.getRoll() - lastRoll) > changeThreshold) {
                     strafeVal = 0.1;
                     done = true;
                 } else {
-                    translationVal = -0.1;
+                    translationVal = -0.15;
                 }
             } else if (Math.abs(s_Swerve.m_gyro.getRoll()) > 5) {
                 onRamp = true;
@@ -62,7 +60,7 @@ public class Balance extends CommandBase {
             translationVal = 0.0;
             strafeVal = 0.0;
             rotationVal = 0.0;
-        }
+        } */
 
         /*if (Math.abs(s_Swerve.m_gyro.getRoll()) < 0.1) {
             balanceScale = 150;

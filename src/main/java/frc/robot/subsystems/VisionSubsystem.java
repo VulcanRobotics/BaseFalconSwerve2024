@@ -225,7 +225,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
             
             SmartDashboard.putNumber("x", bluePose[0]);
             SmartDashboard.putNumber("id", id);
-            SmartDashboard.putNumber("latency", latency);
+            //SmartDashboard.putNumber("latency", latency);
 
             if (poseEstimate.isPresent()) { //If you see an apriltag, try and get an estimated positional prediction relative to the field
                 addVisionEstimate(poseEstimate.get(), id);

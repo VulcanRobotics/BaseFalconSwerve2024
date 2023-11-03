@@ -61,6 +61,8 @@ public class RobotContainer {
     private final LightingSubsystem s_Light = new LightingSubsystem();
     public AutoManager autoManager = new AutoManager(s_Swerve, s_Arm, s_Pneumatic, s_Intake, s_Vision, s_Light);
 
+    private Pose2d boardPoses[];
+
     private Boolean isFieldRelative = true;
 
     public static void controllerRumble(double amount) {
@@ -70,6 +72,7 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         //System.out.println("Alliance: " + DriverStation.getAlliance() + "...................");
+        boardPoses = new Pose2d[3];
 
         s_Swerve.setDefaultCommand( //Unless overrided, this command takes in xbox inputs and controls the robot's swerve modules
             new TeleopSwerve(
@@ -149,6 +152,10 @@ public class RobotContainer {
                 return true; 
             }
         });
+
+        //extraXbox.rightBumper();
+
+        //extraXbox.leftTrigger().onTrue(getAutonomousCommand());
 
 
         /* Operator Buttons */

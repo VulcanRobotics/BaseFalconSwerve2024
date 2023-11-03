@@ -201,7 +201,7 @@ public class ArmSubsystem extends SubsystemBase {
         if (!cube){
             return goToPosition(0.37, 0.375, false, false);
         } else {
-            return goToPosition(0.375, 0.375, false, false);
+            return goToPosition(0.377, 0.378, false, false);
         }
     }
 

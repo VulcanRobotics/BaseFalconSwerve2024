@@ -75,7 +75,7 @@ public class AutoManager {
         eventMap.put("Spit", new InstantCommand(() -> intakeSubsystem.forceSpit()));
         eventMap.put("CubeSeek", new CubeSeek(swerveDriveSubsystem));
         eventMap.put("Balance", new Balance(swerveDriveSubsystem));
-        eventMap.put("CubeTransfer", new SequentialCommandGroup(new OriginPlace(armSubsystem, true), new InstantCommand(() -> intakeSubsystem.spit()), new WaitCommand(0.1), new InstantCommand(() -> pneumaticSubsystem.toggleClawState() )));
+        eventMap.put("CubeTransfer", new SequentialCommandGroup(new OriginPlace(armSubsystem, true), new InstantCommand(() -> intakeSubsystem.slowForceSpit()), new WaitCommand(1), new InstantCommand(() -> pneumaticSubsystem.toggleClawState() )));
         autoBuilder = new SwerveAutoBuilder(
                 
                 /*This code below are the final (and most important parts) of the auton, the swerve drive assignment!

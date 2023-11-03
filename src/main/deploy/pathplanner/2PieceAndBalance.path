@@ -26,33 +26,6 @@
     },
     {
       "anchorPoint": {
-        "x": 5.407796713162871,
-        "y": 2.743642490757204
-      },
-      "prevControl": {
-        "x": 4.66648231214077,
-        "y": 2.7307027997551403
-      },
-      "nextControl": {
-        "x": 6.175350261223943,
-        "y": 2.757040187774494
-      },
-      "holonomicAngle": 0,
-      "isReversal": false,
-      "velOverride": 0.5,
-      "isLocked": false,
-      "isStopPoint": true,
-      "stopEvent": {
-        "names": [
-          "QuickLook"
-        ],
-        "executionBehavior": "sequential",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
         "x": 6.274890726864788,
         "y": 2.7958316576355378
       },
@@ -78,12 +51,12 @@
     },
     {
       "anchorPoint": {
-        "x": 4.177350122061355,
-        "y": 2.6969621803826938
+        "x": 4.15873598587475,
+        "y": 2.7625465667597995
       },
       "prevControl": {
-        "x": 5.667060896621793,
-        "y": 2.5906122558772893
+        "x": 5.648446760435188,
+        "y": 2.656196642254395
       },
       "nextControl": null,
       "holonomicAngle": 0,
@@ -112,14 +85,14 @@
       ]
     },
     {
-      "position": 1.1927556818181821,
+      "position": 0.6275568181818179,
       "names": [
         "ToggleIntake",
         "Intake"
       ]
     },
     {
-      "position": 2.7197443181818124,
+      "position": 1.7197443181818124,
       "names": [
         "ToggleIntake"
       ]

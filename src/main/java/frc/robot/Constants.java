@@ -77,9 +77,9 @@ public final class Constants {
 
         public static final double fieldLength = Units.inchesToMeters(651.25);
         public static final double fieldWidth = Units.inchesToMeters(315.5);
-        private static final double xReference = 0.0;
-        private static final double yReference = 0.0;
-        private static final double yDelta = 0.66;
+        private static final double xReference = 1.80;
+        private static final double yReference = 5.00;
+        private static final double yDelta = -0.45;
         private static final Rotation2d rot0 = new Rotation2d(Units.degreesToRadians(0.0));
         private static final Rotation2d rot180 = new Rotation2d(Units.degreesToRadians(180.0));
 
