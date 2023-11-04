@@ -108,14 +108,7 @@ public class AutoManager {
     }
     
     public Command getAuton() {
-        List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup(autonNameList.get(autonNumber), new PathConstraints(speed, 3.0)); //3.5 before open lab
-        return autoBuilder.fullAuto(path);
-        /*return new SequentialCommandGroup(
-            new FollowPathWithEvents(autoBuilder.fullAuto(path.get(0)), path.get(0).getMarkers(), eventMap),
-            //new WaitCommand(1.0),
-            //eventMap.get("LookMode"),
-            //new WaitCommand(1.0),
-            new FollowPathWithEvents(autoBuilder.fullAuto(path.get(1)), path.get(1).getMarkers(), eventMap)
-        );*/
+       List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup(autonNameList.get(autonNumber), new PathConstraints(speed, 3.0)); //3.5 before open lab
+        return autoBuilder.fullAuto(path); 
     } 
 }

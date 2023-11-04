@@ -194,10 +194,15 @@ public class RobotContainer {
             boardPoses[1] = Constants.FieldConstants.PlacementPositions[4][0];
             boardPoses[2] = Constants.FieldConstants.PlacementPositions[5][0];
         }
+        
+        extraXbox.x().whileTrue(new DriveToPosition(s_Swerve, boardPoses[0]));
+        extraXbox.start().whileTrue((new DriveToPosition(s_Swerve, boardPoses[1])));
+        extraXbox.y().whileTrue((new DriveToPosition(s_Swerve, boardPoses[2])));
+        
 
         SmartDashboard.putBoolean("RB", extraXbox.rightBumper().getAsBoolean());
         SmartDashboard.putBoolean("LB", extraXbox.leftBumper().getAsBoolean());
-        SmartDashboard.putBoolean("M", !((extraXbox.rightBumper().getAsBoolean()) && (extraXbox.leftBumper().getAsBoolean())));
+        SmartDashboard.putBoolean("M", ((!extraXbox.rightBumper().getAsBoolean()) && (!extraXbox.leftBumper().getAsBoolean())));
 
 
     }

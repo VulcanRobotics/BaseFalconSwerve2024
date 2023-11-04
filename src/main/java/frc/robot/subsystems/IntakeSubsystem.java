@@ -209,7 +209,7 @@ public class IntakeSubsystem extends SubsystemBase {
         slowForceSpit(3000);
 
         m_intakeMotor.set(intakeSpeed); //Finally, sets it to the intake motor
-
+        SmartDashboard.putBoolean("CUBE?", haveCube);
     }
 
     

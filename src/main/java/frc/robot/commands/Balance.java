@@ -20,7 +20,7 @@ public class Balance extends CommandBase {
     private Swerve s_Swerve;    
     private final boolean fieldCentric = false;
     private double rotationVal = 0.0;
-    private double balanceScale = 135;
+    private double balanceScale = 100;
 
     private double changeThreshold = 0.85;
 
