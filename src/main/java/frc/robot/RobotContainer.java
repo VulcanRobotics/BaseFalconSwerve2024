@@ -61,7 +61,7 @@ public class RobotContainer {
     private final LightingSubsystem s_Light = new LightingSubsystem();
     public AutoManager autoManager = new AutoManager(s_Swerve, s_Arm, s_Pneumatic, s_Intake, s_Vision, s_Light);
 
-    private Pose2d boardPoses[];
+    public Pose2d boardPoses[];
 
     private Boolean isFieldRelative = true;
 
@@ -119,7 +119,7 @@ public class RobotContainer {
         driver.rightTrigger(0.5).onTrue(new InstantCommand(() -> s_Pneumatic.setIntakeState(true)));
         driver.rightTrigger(0.5).onFalse(new InstantCommand(() -> s_Pneumatic.setIntakeState(false)));
         driver.y().onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
-        driver.x().whileTrue(new DriveToPosition(s_Swerve, new Pose2d(1.65, 4.41, new Rotation2d(0.0))));
+        //driver.x().whileTrue(new DriveToPosition(s_Swerve, new Pose2d(1.65, 4.41, new Rotation2d(0.0))));
         driver.start().onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
             
         extraXbox.povRight().onTrue(new SequentialCommandGroup( new InstantCommand(() -> AutoManager.autonNumber++), new InstantCommand(() -> AutoManager.checkAutonChange()) ) {
@@ -173,7 +173,32 @@ public class RobotContainer {
             isFieldRelative = !isFieldRelative;
             }));
 
-        
+        extraXbox.x().whileTrue(new DriveToPosition(s_Swerve, boardPoses[0]));
+        extraXbox.start().whileTrue((new DriveToPosition(s_Swerve, boardPoses[1])));
+        extraXbox.y().whileTrue((new DriveToPosition(s_Swerve, boardPoses[2])));
+      
+
+    }
+
+    public void switchDriveTarget() {
+        if (extraXbox.leftBumper().getAsBoolean()) {
+            boardPoses[0] = Constants.FieldConstants.PlacementPositions[0][0];
+            boardPoses[1] = Constants.FieldConstants.PlacementPositions[1][0];
+            boardPoses[2] = Constants.FieldConstants.PlacementPositions[2][0];
+        } else if (extraXbox.rightBumper().getAsBoolean()) {
+            boardPoses[0] = Constants.FieldConstants.PlacementPositions[6][0];
+            boardPoses[1] = Constants.FieldConstants.PlacementPositions[7][0];
+            boardPoses[2] = Constants.FieldConstants.PlacementPositions[8][0];
+        } else {
+            boardPoses[0] = Constants.FieldConstants.PlacementPositions[3][0];
+            boardPoses[1] = Constants.FieldConstants.PlacementPositions[4][0];
+            boardPoses[2] = Constants.FieldConstants.PlacementPositions[5][0];
+        }
+
+        SmartDashboard.putBoolean("RB", extraXbox.rightBumper().getAsBoolean());
+        SmartDashboard.putBoolean("LB", extraXbox.leftBumper().getAsBoolean());
+        SmartDashboard.putBoolean("M", !((extraXbox.rightBumper().getAsBoolean()) && (extraXbox.leftBumper().getAsBoolean())));
+
 
     }
 
