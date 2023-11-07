@@ -55,7 +55,7 @@ public class COTSFalconSwerveConstants {
         /** 12.8 : 1 */
         double angleGearRatio = (12.8);
  
-        double angleKP = 0.2;
+        double angleKP = 0.1;
         double angleKI = 0.0;
         double angleKD = 0.0;
         double angleKF = 0.0;
@@ -71,14 +71,14 @@ public class COTSFalconSwerveConstants {
         double wheelDiameter = Units.inchesToMeters(4.0);
 
         /** (150 / 7) : 1 */
-        double angleGearRatio = (15.4286);
+        double angleGearRatio = ((150.0 / 7.0) / 1.0);
 
-        double angleKP = 0.3;
+        double angleKP = 0.1;
         double angleKI = 0.0;
         double angleKD = 0.0;
         double angleKF = 0.0;
 
-        boolean driveMotorInvert = true;
+        boolean driveMotorInvert = false;
         boolean angleMotorInvert = true;
         boolean canCoderInvert = false;
         return new COTSFalconSwerveConstants(wheelDiameter, angleGearRatio, driveGearRatio, angleKP, angleKI, angleKD, angleKF, driveMotorInvert, angleMotorInvert, canCoderInvert);
