@@ -12,6 +12,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class BrushIntake extends CommandBase {
 
@@ -21,16 +22,18 @@ public class BrushIntake extends CommandBase {
     public BrushIntake(Intake intake, double speed) {
         this.s_Intake = intake;
         this.speed = speed;
+        addRequirements(s_Intake);
      }
      @Override
     public void execute() {
         s_Intake.setIntakeSpeed(speed);
+        SmartDashboard.putNumber("Intake Speeds", speed);
     }
 
 
     @Override
     public void end(boolean interrupted) {
-        
+        s_Intake.setIntakeSpeed(0.0);
     }
 
 }

@@ -31,14 +31,17 @@ public class RobotContainer {
 
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
-    private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kX.value);
     private final JoystickButton calibrateEncoders = new JoystickButton(driver, XboxController.Button.kStart.value);
-    private final JoystickButton goToPosition = new JoystickButton(driver, XboxController.Button.kB.value);
+    private final JoystickButton intake = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
+    private final JoystickButton spit = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final VisionSubsystem s_Vision = new VisionSubsystem(s_Swerve);
     public AutoManager autoManager = new AutoManager(s_Swerve, s_Vision);
+    private final Intake s_Intake = new Intake();
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -75,7 +78,8 @@ public class RobotContainer {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         calibrateEncoders.onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
-        goToPosition.onTrue(new LinearGoToPosition(s_Swerve, new Pose2d(3.0, 4.0, new Rotation2d(0.0))));
+        intake.whileTrue(new BrushIntake(s_Intake, -0.5));
+        spit.whileTrue(new BrushIntake(s_Intake, 0.5));
 
     }
 
