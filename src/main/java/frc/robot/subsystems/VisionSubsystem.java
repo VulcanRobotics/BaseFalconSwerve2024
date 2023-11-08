@@ -88,21 +88,19 @@ import edu.wpi.first.networktables.NetworkTableInstance;
     
         @Override
         public void periodic() {
+
             double[] bluePose = table.getEntry("botpose_wpiblue").getDoubleArray(new double[6]); 
+            double[] redPose = table.getEntry("botpose_wpired").getDoubleArray(new double[6]); 
+
             double id = table.getEntry("tid").getDouble(0);
             double latency = Timer.getFPGATimestamp() - (pipelineLatency.getDouble(0.0) + captureLatency.getDouble(0.0))/1000;
-            poseEstimate = getEstimate(bluePose, id, latency);
 
-            SmartDashboard.putNumber("x", bluePose[0]);
-            SmartDashboard.putNumber("id", id);
-            SmartDashboard.putNumber("latency", latency);
+            poseEstimate = (Constants.GameConstants.kAllianceColorName.startsWith("b")) ? getEstimate(bluePose, id, latency) : getEstimate(redPose, id, latency);
 
             if (poseEstimate.isPresent()) {
                 addVisionEstimate(poseEstimate.get(), id);
             }
-
-
-        
+            
         }
 
     }

@@ -33,7 +33,6 @@ public class RobotContainer {
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
     private final JoystickButton calibrateEncoders = new JoystickButton(driver, XboxController.Button.kStart.value);
-    private final JoystickButton goToPosition = new JoystickButton(driver, XboxController.Button.kB.value);
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
@@ -75,7 +74,6 @@ public class RobotContainer {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         calibrateEncoders.onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
-        goToPosition.onTrue(new LinearGoToPosition(s_Swerve, new Pose2d(3.0, 4.0, new Rotation2d(0.0))));
 
     }
 

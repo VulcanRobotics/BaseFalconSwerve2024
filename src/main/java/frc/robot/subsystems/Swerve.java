@@ -60,8 +60,14 @@ public class Swerve extends SubsystemBase {
                                                                 getYaw(),
                                                                 getModulePositions(),
                                                                 new Pose2d(),
-                                                                VecBuilder.fill(.5,.5, new Rotation2d(10).getRadians()),
-                                                                VecBuilder.fill(.5, .5, new Rotation2d(10).getRadians()));
+                                                                VecBuilder.fill(
+                                                                    Constants.VisionConstants.kOdometryStdevs[0],
+                                                                    Constants.VisionConstants.kOdometryStdevs[1],
+                                                                    Constants.VisionConstants.kOdometryStdevs[2]),
+                                                                VecBuilder.fill(
+                                                                    Constants.VisionConstants.kVisionStdevs[0],
+                                                                    Constants.VisionConstants.kVisionStdevs[1],
+                                                                    Constants.VisionConstants.kVisionStdevs[2]));
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -178,7 +184,6 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("Estimator X", swerveDrivePoseEstimator.getEstimatedPosition().getX());
         SmartDashboard.putNumber("Estimator Y", swerveDrivePoseEstimator.getEstimatedPosition().getY());
         SmartDashboard.putNumber("Estimator Rot", swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees());
-
         
     }
 }

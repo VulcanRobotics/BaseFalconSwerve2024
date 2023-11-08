@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.lib.util.COTSFalconSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 import java.util.List;
@@ -18,11 +19,26 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 public final class Constants {
     public static final double stickDeadband = 0.1;
 
+    public static final class VisionConstants {
+        //Numbers used in position estimation with vision.
+        public static final double[] kVisionStdevs = {0.05, 0.05, 0.05};
+        public static final double[] kOdometryStdevs = {0.85, 0.85, 0.85};
+
+        public static final double kTranslationStdDevCoefficient = 0.3;
+        public static final double kRotationStdDevCoefficient = 0.9;
+    }
+
+    public static final class GameConstants {
+        //Ensure that this value will update
+        public static String kAllianceColorName = DriverStation.getAlliance().toString().strip().toLowerCase();
+    }
+
     public static final class FieldConstants {
 
         public static final double fieldLength = Units.inchesToMeters(651.25);
         public static final double fieldWidth = Units.inchesToMeters(315.5);
         
+        // This will hav to change based on the season game; This map is for 2023's Charged Up field.
         public static final List<AprilTag> aprilTags = List.of(
                 new AprilTag(
                         1,
