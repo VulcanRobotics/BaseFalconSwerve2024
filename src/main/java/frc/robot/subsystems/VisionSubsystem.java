@@ -31,8 +31,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
         //Botpose value
 
-        private double translationStdDevCoefficient = 0.3;
-        private double rotationStdDevCoefficient = 0.9;
+        private double translationStdDevCoefficient = Constants.VisionConstants.kTranslationStdDevCoefficient;
+        private double rotationStdDevCoefficient = Constants.VisionConstants.kRotationStdDevCoefficient;
 
         Optional<LLPoseEstimate> poseEstimate  = Optional.empty();
         Swerve swerveDriveSubsystem;
@@ -100,7 +100,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
             if (poseEstimate.isPresent()) {
                 addVisionEstimate(poseEstimate.get(), id);
             }
-            
+
         }
 
     }

@@ -1,81 +1,99 @@
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.PIDCommand;
-import frc.robot.subsystems.Swerve;
+import com.fasterxml.jackson.databind.deser.std.ContainerDeserializerBase;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
+import frc.robot.subsystems.Swerve;
 
-public class LinearGoToPosition extends CommandBase {
-
-    private static final TrapezoidProfile.Constraints xConstraints = new TrapezoidProfile.Constraints(2, 3);
-    private static final TrapezoidProfile.Constraints yConstraints = new TrapezoidProfile.Constraints(2, 3);
-    private static final TrapezoidProfile.Constraints rotConstraints = new TrapezoidProfile.Constraints(6, 7);
-
-    private final ProfiledPIDController xController = new ProfiledPIDController(.01, 0, 0, xConstraints);//5.5
-    private final ProfiledPIDController yController = new ProfiledPIDController(.01, 0, 0, yConstraints);//4
-    private final ProfiledPIDController omegaController = new ProfiledPIDController(.01, 0, 0, rotConstraints);//6
-
-    Swerve swerveDriveSubsystem;
-    Pose2d desiredPose2d;
+public class DriveToPosition extends CommandBase {
     
-    public LinearGoToPosition(Swerve swerve, Pose2d desiredPose)  {
-        swerveDriveSubsystem = swerve;
-        desiredPose2d = desiredPose;
+    private final double AnglePIDValues[] = {4.0, 0.0, 0.2};
+    private final double DrivePIDValues[] = {2.0, 0.0, 0.1};
 
-        xController.setTolerance(0.02);
-        yController.setTolerance(0.02);
-        omegaController.setTolerance(1.0*180.0/3.1415); //1 degree in radians
-        omegaController.enableContinuousInput(-Math.PI, Math.PI);
+    private PIDController xController = new PIDController(DrivePIDValues[0], DrivePIDValues[1], DrivePIDValues[2]);
+    private PIDController yController = new PIDController(DrivePIDValues[0], DrivePIDValues[1], DrivePIDValues[2]);
+    private ProfiledPIDController mAngleController = new ProfiledPIDController(
+        AnglePIDValues[0], AnglePIDValues[1], AnglePIDValues[2],
+         new Constraints(Constants.Swerve.maxAngularVelocity, Constants.Swerve.maxAngularVelocity));
+
+    private final Swerve swerveDriveSubsystem;
+    private Pose2d targetPoseSupplier;
+
+    public DriveToPosition(Swerve swerveDriveSubsystem, Pose2d targetPoseSupplier) {
+        this.swerveDriveSubsystem = swerveDriveSubsystem;
+        this.targetPoseSupplier = targetPoseSupplier;
+        mAngleController.setTolerance(Math.toRadians(0.25));
+        mAngleController.enableContinuousInput(-Math.PI, Math.PI);
+        addRequirements(swerveDriveSubsystem);
     }
 
-    @Override
-    public void initialize(){
-        var robotPose = swerveDriveSubsystem.getPose();
-        var robotVelocity = ChassisSpeeds.fromFieldRelativeSpeeds(
-                swerveDriveSubsystem.getSpeeds(), swerveDriveSubsystem.getRotation());
+    private boolean atX, atY, atTheta;
 
-        omegaController.reset(robotPose.getRotation().getRadians(), robotVelocity.omegaRadiansPerSecond);
-        xController.reset(robotPose.getX(), robotVelocity.vxMetersPerSecond);
-        yController.reset(robotPose.getY(), robotVelocity.vyMetersPerSecond);
+    @Override
+    public void initialize() {
+        xController.reset();
+        yController.reset();
+
+        xController.setTolerance(Units.inchesToMeters(2.0));
+        yController.setTolerance(Units.inchesToMeters(0.5));
+
+        atX = atY = atTheta = false;
     }
-
     @Override
+
     public void execute() {
-        var robotPose = swerveDriveSubsystem.getPose();
-        var targetPose = desiredPose2d;
+        Pose2d robotPose = swerveDriveSubsystem.getPose2();
+        Pose2d targetPose = targetPoseSupplier;
 
-        // Update controllers
-        xController.setGoal(targetPose.getX());
-        yController.setGoal(targetPose.getY());
-        omegaController.setGoal(targetPose.getRotation().getRadians());
+        xController.setSetpoint(targetPose.getX());
+        yController.setSetpoint(targetPose.getY());
+        mAngleController.setGoal(targetPose.getRotation().getRadians());
 
-        var xSpeed = xController.calculate(robotPose.getX()) + xController.getSetpoint().velocity;
-        var ySpeed = yController.calculate(robotPose.getY()) + yController.getSetpoint().velocity;
-        var omegaSpeed = omegaController.calculate(robotPose.getRotation().getRadians())
-                + omegaController.getSetpoint().velocity;
+        // Drive to the target
+        var xSpeed = xController.calculate(robotPose.getX());
+        var ySpeed = yController.calculate(robotPose.getY());
 
-        if (xController.atGoal()) xSpeed = 0;
-        if (yController.atGoal()) ySpeed = 0;
-        if (omegaController.atGoal()) omegaSpeed = 0;
+        var thetaSpeed = mAngleController.calculate(robotPose.getRotation().getRadians(),
+                targetPose.getRotation().getRadians());
 
-        swerveDriveSubsystem.setModuleStates(new ChassisSpeeds(xSpeed, ySpeed, omegaSpeed), true);
+        if (xController.atSetpoint() || atX) {
+            xSpeed = 0;
+            // atX = true;
+
+        }
+
+        if (yController.atSetpoint() || atY) {
+            ySpeed = 0;
+
+        }
+
+        if (mAngleController.atSetpoint() || atTheta) {
+            thetaSpeed = 0;
+
+        }
+
+        swerveDriveSubsystem.drive(new Translation2d(xSpeed, ySpeed), thetaSpeed, true, false);
     }
-
+        
     @Override
     public boolean isFinished() {
-        return xController.atGoal() && yController.atGoal() && omegaController.atGoal();
+
+        return xController.atSetpoint() && yController.atSetpoint() && mAngleController.atSetpoint();
+
     }
 
     @Override
     public void end(boolean interrupted) {
-        
+        swerveDriveSubsystem.drive(new Translation2d(0.0, 0.0), 0.0, false, false);
     }
 }
-

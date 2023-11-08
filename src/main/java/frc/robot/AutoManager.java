@@ -41,10 +41,5 @@ public class AutoManager {
     
     public Command getAuton() {
         return autoBuilder.fullAuto(path);
-        /*return new SequentialCommandGroup(
-            new FollowPathWithEvents(autoBuilder.fullAuto(path.get(0)), path.get(0).getMarkers(), eventMap),
-            new WaitCommand(3.0),
-            new FollowPathWithEvents(autoBuilder.fullAuto(path.get(1)), path.get(1).getMarkers(), eventMap)
-        );*/
     } 
 }
