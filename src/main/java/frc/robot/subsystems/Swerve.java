@@ -154,6 +154,7 @@ public class Swerve extends SubsystemBase {
 
     public void zeroGyro(){
         m_gyro.zeroYaw();
+
     }
 
     public Rotation2d getYaw() {
@@ -186,6 +187,7 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("Estimator Rot", swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees());
 
         SmartDashboard.putNumber("Gyro YAW", getYaw().getDegrees());
+        SmartDashboard.putNumber("True Gyro Yaw", m_gyro.getYaw());
         
     }
 }
