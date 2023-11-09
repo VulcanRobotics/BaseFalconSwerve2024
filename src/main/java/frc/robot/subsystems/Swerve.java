@@ -184,6 +184,8 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("Estimator X", swerveDrivePoseEstimator.getEstimatedPosition().getX());
         SmartDashboard.putNumber("Estimator Y", swerveDrivePoseEstimator.getEstimatedPosition().getY());
         SmartDashboard.putNumber("Estimator Rot", swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees());
+
+        SmartDashboard.putNumber("Gyro YAW", getYaw().getDegrees());
         
     }
 }

@@ -72,9 +72,9 @@ public class COTSFalconSwerveConstants {
 
         double angleGearRatio = ((150.0 / 7.0) / 1.0); //For MK4I mods, keep this the same always.
 
-        double angleKP = 0.1; //Might need to change; modules were jittery when first calibrating them
+        double angleKP = 0.15; //Might need to change; modules were jittery when first calibrating them
         double angleKI = 0.0;
-        double angleKD = 0.0;
+        double angleKD = 0.01;
         double angleKF = 0.0;
 
         boolean driveMotorInvert = false;

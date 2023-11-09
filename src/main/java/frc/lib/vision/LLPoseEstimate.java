@@ -2,6 +2,8 @@ package frc.lib.vision;
 
 import edu.wpi.first.math.geometry.Pose3d;
 
+//Pretty much just a class for packaging vision values
+
 public class LLPoseEstimate {
 
         public final Pose3d estimatedPose;

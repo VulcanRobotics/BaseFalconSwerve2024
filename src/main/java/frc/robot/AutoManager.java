@@ -7,13 +7,12 @@ import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.util.concurrent.Event;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.Constants;
-
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +26,9 @@ public class AutoManager {
     List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup("thing", new PathConstraints(.5, .5));
 
     public AutoManager(Swerve swerveDriveSubsystem, VisionSubsystem visionSubsystem) {
+
+        eventMap.put("Wait", new WaitCommand(1));
+
         autoBuilder = new SwerveAutoBuilder(
                 swerveDriveSubsystem::getPose,
                 swerveDriveSubsystem::resetPose,
