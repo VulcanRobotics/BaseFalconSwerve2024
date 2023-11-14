@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class TeleopSwerve extends CommandBase {    
     private Swerve s_Swerve;    
+    private boolean gyroAdjust;
     private DoubleSupplier translationSup;
     private DoubleSupplier strafeSup;
     private DoubleSupplier rotationSup;
@@ -27,6 +28,7 @@ public class TeleopSwerve extends CommandBase {
         this.strafeSup = strafeSup;
         this.rotationSup = rotationSup;
         this.robotCentricSup = robotCentricSup;
+        this.gyroAdjust = gyroAdjust;
     }
 
     @Override
@@ -43,8 +45,7 @@ public class TeleopSwerve extends CommandBase {
             new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed), 
             rotationVal * Constants.Swerve.maxAngularVelocity, 
             true, 
-            true,
-            rotationSup.getAsDouble()
+            true
         );
     }
 }

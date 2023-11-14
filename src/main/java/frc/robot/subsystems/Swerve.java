@@ -81,7 +81,6 @@ public class Swerve extends SubsystemBase {
     }
 
        
-
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop, double rawRotation) {
 
         //If statement for "lane-assist" (ensures last heading set is kept despite module inconsistencies)
