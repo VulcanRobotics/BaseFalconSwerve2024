@@ -105,6 +105,8 @@ public final class Constants {
         
         public static final boolean invertGyro = true; // Always ensure Gyro is CCW+ CW-
 
+        public static final double kRotationAdjustCoefficient = 0.5;
+
         public static final COTSFalconSwerveConstants chosenModule =  //TODO: This must be tuned to specific robot
             COTSFalconSwerveConstants.SDSMK4i(COTSFalconSwerveConstants.driveGearRatios.SDSMK4i_L2);
 
@@ -168,9 +170,9 @@ public final class Constants {
 
         /* Swerve Profiling Values */
         /** Meters per Second */
-        public static final double maxSpeed = 0.1; //4.5 //TODO: This must be tuned to specific robot
+        public static final double maxSpeed = 4.5; //4.5 //TODO: This must be tuned to specific robot
         /** Radians per Second */
-        public static final double maxAngularVelocity = 0.5; //10 //TODO: This must be tuned to specific robot
+        public static final double maxAngularVelocity = 10.0; //10 //TODO: This must be tuned to specific robot
 
         /* Neutral Modes */
         public static final NeutralMode angleNeutralMode = NeutralMode.Coast;

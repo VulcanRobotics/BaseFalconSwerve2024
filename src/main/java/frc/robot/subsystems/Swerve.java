@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 
 public class Swerve extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
@@ -33,12 +35,20 @@ public class Swerve extends SubsystemBase {
     private Pose2d pose = new Pose2d();
     public SwerveDriveKinematics kinematics;
     public ChassisSpeeds currentChassisSpeeds;
+    public Rotation2d lastGyroRotation;
+    private ProfiledPIDController mAngleController = new ProfiledPIDController(1.5, 0.1, 0.2,
+         new Constraints(Constants.Swerve.maxAngularVelocity, Constants.Swerve.maxAngularVelocity));
+
     
 
     public Swerve() {
         currentChassisSpeeds =  new ChassisSpeeds(0.0, 0.0, 0.0);
+        mAngleController.setTolerance(Math.toRadians(0.25));
+        mAngleController.enableContinuousInput(Math.PI, 3*Math.PI);
         m_gyro = new AHRS(SPI.Port.kMXP);
         zeroGyro();
+        mAngleController.reset(getYaw().getRadians());
+        lastGyroRotation = getYaw();
         this.kinematics = Constants.Swerve.swerveKinematics; //May be redundant
 
         mSwerveMods = new SwerveModule[] {
@@ -70,7 +80,42 @@ public class Swerve extends SubsystemBase {
                                                                     Constants.VisionConstants.kVisionStdevs[2]));
     }
 
+       
+
+    public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop, double rawRotation) {
+
+        //If statement for "lane-assist" (ensures last heading set is kept despite module inconsistencies)
+        //adjust (lower) deadband to make "lastrotation more accurate"
+        if (Math.abs(rawRotation) > 0.04) {
+            lastGyroRotation = getYaw();
+        } else {
+            mAngleController.setGoal(lastGyroRotation.getRadians());
+            rotation = mAngleController.calculate(getYaw().getRadians()); 
+        }
+
+        SwerveModuleState[] swerveModuleStates =
+            Constants.Swerve.swerveKinematics.toSwerveModuleStates(
+                fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                                    translation.getX(), 
+                                    translation.getY(), 
+                                    rotation, 
+                                    getYaw()
+                                )
+                                : new ChassisSpeeds(
+                                    translation.getX(), 
+                                    translation.getY(), 
+                                    rotation)
+                                );
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
+
+        for(SwerveModule mod : mSwerveMods){
+            mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
+        }
+    }    
+
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+
+
         SwerveModuleState[] swerveModuleStates =
             Constants.Swerve.swerveKinematics.toSwerveModuleStates(
                 fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -154,6 +199,7 @@ public class Swerve extends SubsystemBase {
 
     public void zeroGyro(){
         m_gyro.zeroYaw();
+        lastGyroRotation = new Rotation2d(0.0);
 
     }
 
