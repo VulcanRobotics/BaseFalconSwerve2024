@@ -85,6 +85,7 @@ public class Swerve extends SubsystemBase {
 
         //If statement for "lane-assist" (ensures last heading set is kept despite module inconsistencies)
         //adjust (lower) deadband to make "lastrotation more accurate"
+        //WORK IN PROGRESS - it kinda works though, but is a bit buggy
         if (Math.abs(rawRotation) > 0.04) {
             lastGyroRotation = getYaw();
         } else {
